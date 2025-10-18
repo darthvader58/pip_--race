@@ -1,0 +1,19 @@
+# Ignore local build outputs and VCS metadata
+/target
+/.git
+**/.DS_Store
+**/*.log
+**/node_modules
+**/.vscode
+**/.idea
+
+# Docker-related
+Dockerfile*
+.dockerignore
+
+# Rust tooling caches
+/.cargo
+
+# Python cache (in sibling folders)
+**/__pycache__
+**/.pytest_cache
