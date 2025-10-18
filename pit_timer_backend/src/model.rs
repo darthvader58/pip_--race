@@ -14,11 +14,20 @@ pub fn time_to_call(d: &TelemetryPacket, cfg: &TimerConfig) -> (f64, f64, &'stat
     let t_call = d_rem / v_mps;
     let t_safe = t_call - cfg.buffer_s;
 
+    // let status = if t_safe < 0.0 {
+    //     "LOCKED_OUT"
+    // } else if t_safe < 2.0 {
+    //     "RED"
+    // } else if t_safe < 5.0 {
+    //     "AMBER"
+    // } else {
+    //     "GREEN"
+    // };
     let status = if t_safe < 0.0 {
         "LOCKED_OUT"
-    } else if t_safe < 2.0 {
+    } else if t_safe < 10.0 {
         "RED"
-    } else if t_safe < 5.0 {
+    } else if t_safe < 20.0 {
         "AMBER"
     } else {
         "GREEN"
