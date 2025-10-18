@@ -1,0 +1,17 @@
+[
+  "tire_age_laps",
+  "stint_no",
+  "compound_SOFT",
+  "compound_MED",
+  "compound_HARD",
+  "compound_INTERMEDIATE",
+  "compound_WET",
+  "last3_avg",
+  "last5_slope",
+  "last3_var",
+  "typical_stint_len",
+  "age_vs_typical",
+  "within_typical_window",
+  "age_percentile",
+  "overshoot"
+]

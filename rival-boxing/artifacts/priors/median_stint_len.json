@@ -1,0 +1,18 @@
+{
+  "ITALIAN GRAND PRIX": {
+    "HARD": 28.0,
+    "MEDIUM": 18.0
+  },
+  "MONACO GRAND PRIX": {
+    "HARD": 46.0,
+    "INTERMEDIATE": 22.0,
+    "MEDIUM": 19.0,
+    "SOFT": 14.0,
+    "WET": 14.0
+  },
+  "SINGAPORE GRAND PRIX": {
+    "HARD": 38.5,
+    "MEDIUM": 19.0,
+    "SOFT": 17.0
+  }
+}

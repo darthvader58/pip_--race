@@ -1,0 +1,40 @@
+{
+  "hazard_cv": {
+    "auc": 0.7279698725479582,
+    "ap": 0.23559261884386276,
+    "precision@0.65": 0.29615384615384616,
+    "recall@0.65": 0.2785327635327635,
+    "f1@0.65": 0.2673207255199492
+  },
+  "tactical_cv": {
+    "auc": 0.6132175597913645,
+    "ap": 0.09094472308102207,
+    "precision@0.65": 0.10501163101635914,
+    "recall@0.65": 0.15354700854700853,
+    "f1@0.65": 0.11521513134416361
+  },
+  "stack_oof_f1_at_theta_within2": 0.24048096192384769,
+  "stack_oof_theta": 0.65,
+  "n_samples": 3561,
+  "pos_rate_strict": 0.02499297950014041,
+  "pos_rate_within2": 0.04886267902274642,
+  "strict_all_samples": 3561,
+  "strict_all_precision": 0.413953488372093,
+  "strict_all_recall": 1.0,
+  "strict_all_f1": 0.5855263157894737,
+  "strict_all_pos_rate": 0.02499297950014041,
+  "strict_non_green_samples": 349,
+  "strict_non_green_precision": 0.4025974025974026,
+  "strict_non_green_recall": 1.0,
+  "strict_non_green_f1": 0.5740740740740741,
+  "strict_non_green_pos_rate": 0.08882521489971347,
+  "within2_all_samples": 3561,
+  "within2_all_precision": 0.8093023255813954,
+  "within2_all_recall": 1.0,
+  "within2_all_f1": 0.8946015424164524,
+  "within2_all_pos_rate": 0.04886267902274642,
+  "within2_all_f1_tuned": 0.9830508474576272,
+  "strict_non_green_f1_tuned": 0.7294117647058823,
+  "theta_within2_all": 0.75,
+  "theta_strict_non_green": 0.75
+}
