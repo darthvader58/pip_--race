@@ -1,0 +1,14 @@
+[
+  "cheap_stop_flag",
+  "cheap_prev1",
+  "cheap_prev2",
+  "non_green_runlen",
+  "pits_prev1",
+  "pits_prev2",
+  "tire_age_laps",
+  "compound_SOFT",
+  "compound_MED",
+  "compound_HARD",
+  "compound_INTERMEDIATE",
+  "compound_WET"
+]
