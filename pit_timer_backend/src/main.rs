@@ -33,7 +33,13 @@ async fn main() {
 }
 
 async fn handle_connection(stream: tokio::net::TcpStream) {
-    let ws_stream = accept_async(stream).await.unwrap();
+    let ws_stream = match accept_async(stream).await {
+        Ok(ws) => ws,
+        Err(e) => {
+            eprintln!("WebSocket handshake failed: {}", e);
+            return;
+        }
+    };
     let (_, mut read) = ws_stream.split();
 
     // Try to resolve config path robustly: prefer workspace-relative, then CWD.
@@ -44,10 +50,14 @@ async fn handle_connection(stream: tokio::net::TcpStream) {
         if let Ok(msg) = msg {
             if msg.is_text() {
                 if let Ok(data) = serde_json::from_str::<model::TelemetryPacket>(&msg.to_string()) {
+                    let profile_status = match &data.speed_profile {
+                        Some(profile) => format!("profile({} samples)", profile.len()),
+                        None => "no profile".to_string()
+                    };
                     let (t_call, t_safe, status) = model::time_to_call(&data, &cfg);
                     println!(
-                        "[ lap ] dist={:.1}m  speed={:.1}kph  t_call={:.2}s  t_safe={:.2}s  STATUS={}",
-                        data.lap_distance_m, data.speed_kph, t_call, t_safe, status
+                        "[ lap ] dist={:.1}m  speed={:.1}kph  {}  t_call={:.2}s  t_safe={:.2}s  STATUS={}",
+                        data.lap_distance_m, data.speed_kph, profile_status, t_call, t_safe, status
                     );
                 }
             }
