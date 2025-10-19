@@ -1,0 +1,8 @@
+/Users/shashwatraj/Desktop/pip_--race/rival-boxing/rt_predictor/target/release/deps/synstructure-78560cefbafda3f4.d: /Users/shashwatraj/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/synstructure-0.13.2/src/lib.rs /Users/shashwatraj/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/synstructure-0.13.2/src/macros.rs
+
+/Users/shashwatraj/Desktop/pip_--race/rival-boxing/rt_predictor/target/release/deps/libsynstructure-78560cefbafda3f4.rlib: /Users/shashwatraj/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/synstructure-0.13.2/src/lib.rs /Users/shashwatraj/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/synstructure-0.13.2/src/macros.rs
+
+/Users/shashwatraj/Desktop/pip_--race/rival-boxing/rt_predictor/target/release/deps/libsynstructure-78560cefbafda3f4.rmeta: /Users/shashwatraj/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/synstructure-0.13.2/src/lib.rs /Users/shashwatraj/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/synstructure-0.13.2/src/macros.rs
+
+/Users/shashwatraj/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/synstructure-0.13.2/src/lib.rs:
+/Users/shashwatraj/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/synstructure-0.13.2/src/macros.rs:

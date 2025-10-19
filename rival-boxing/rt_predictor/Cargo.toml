@@ -1,0 +1,17 @@
+[package]
+name = "rt_predictor"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = { version = "0.7", features = ["ws", "json"] }
+tokio = { version = "1.39", features = ["rt-multi-thread", "macros"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tch = { version = "0.15", features = ["download-libtorch"] }
+anyhow = "1.0"
+thiserror = "1.0"
+parking_lot = "0.12"
+futures = "0.3"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["fmt","env-filter"] }

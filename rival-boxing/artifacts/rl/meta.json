@@ -27,12 +27,10 @@
     "compound_INTERMEDIATE",
     "compound_WET"
   ],
-  "n_quantiles": 101,
-  "gamma": 0.98,
+  "in_dim": 26,
+  "n_actions": 2,
+  "n_quant": 101,
   "hidden": 256,
-  "actions": [
-    "NO_BOX",
-    "BOX"
-  ],
-  "note": "Expectation gap (BOX - NO_BOX) -> Platt -> prob"
+  "n_quantiles": 101,
+  "orig_in_dim": 38
 }
