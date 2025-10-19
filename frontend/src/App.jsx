@@ -1,159 +1,79 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
-
-function useTimerSocket(url) {
-  const [data, setData] = useState({ t_call: null, t_safe: null, status: 'INIT', lap_distance_m: 0, speed_kph: 0 })
-  const [connected, setConnected] = useState(false)
-  const wsRef = useRef(null)
-
-  useEffect(() => {
-    if (!url) return
-    let alive = true
-    const ws = new WebSocket(url)
-    wsRef.current = ws
-    ws.onopen = () => setConnected(true)
-    ws.onclose = () => setConnected(false)
-    ws.onerror = () => setConnected(false)
-    ws.onmessage = (evt) => {
-      try {
-        const msg = JSON.parse(evt.data)
-        // Expecting { t_call, t_safe, status, lap_distance_m, speed_kph }
-        if (alive) setData(msg)
-      } catch (e) {
-        // ignore
-      }
-    }
-    return () => {
-      alive = false
-      try { ws.close() } catch {}
-    }
-  }, [url])
-
-  return { data, connected }
-}
-
-function formatTime(seconds) {
-  if (seconds == null || !isFinite(seconds)) return '00:00.00'
-  const s = Math.max(0, Math.floor(seconds))
-  const mm = String(Math.floor(s / 60)).padStart(2, '0')
-  const ss = String(s % 60).padStart(2, '0')
-  // Show hundredths (2 digits)
-  const hundredths = Math.max(0, Math.floor((seconds - Math.floor(seconds)) * 100))
-  const hsStr = String(hundredths).padStart(2, '0')
-  return `${mm}:${ss}.${hsStr}`
-}
-
-function StatusBadge({ status }) {
-  const cls = status === 'GREEN' ? 'green' : status === 'AMBER' ? 'yellow' : status === 'RED' ? 'red' : 'neutral'
-  return <span className={`status-badge ${cls}`}>{status}</span>
-}
-
-function PitCountdown({ tSafe, status }) {
-  const [display, setDisplay] = useState(tSafe ?? 0)
-
-  useEffect(() => {
-    setDisplay(tSafe ?? 0)
-  }, [tSafe])
-
-  // Update timer every 30ms for smooth hundredths
-  useEffect(() => {
-    let last = Date.now()
-    const id = setInterval(() => {
-      setDisplay((prev) => {
-        if (prev <= 0) return 0
-        const now = Date.now()
-        const elapsed = (now - last) / 1000
-        last = now
-        return Math.max(0, prev - elapsed)
-      })
-    }, 30)
-    return () => clearInterval(id)
-  }, [])
-
-  // Map status to color class
-  let colorClass = '';
-  switch ((status || '').toUpperCase()) {
-    case 'GREEN':
-      colorClass = 'timer-green';
-      break;
-    case 'AMBER':
-      colorClass = 'timer-amber';
-      break;
-    case 'RED':
-      colorClass = 'timer-red';
-      break;
-    case 'LOCKED':
-    case 'LOCKED OUT':
-    case 'LOCKED_OUT':
-      colorClass = 'timer-locked';
-      break;
-    default:
-      colorClass = 'timer-neutral';
-  }
-  return (
-    <section className="panel pit-countdown-panel">
-      <h2>PIT ENTRY COUNTDOWN <StatusBadge status={status} /></h2>
-      <div className={`countdown-display ${colorClass}`} id="pitCountdown">{formatTime(display)}</div>
-    </section>
-  )
-}
+import React from 'react';
+import useRouter from './hooks/useRouter';
+import useWebSocket from './hooks/useWebSocket';
+import Navigation from './components/Navigation';
+import LiveRacePage from './pages/LiveRacePage';
+import StrategyPage from './pages/StrategyPage';
+import AboutPage from './pages/AboutPage';
 
 export default function App() {
-  // Use env var VITE_BACKEND_WS or default to ws://localhost:8765
-  const wsUrl = useMemo(() => {
-    return import.meta.env.VITE_BACKEND_WS || 'ws://localhost:8765'
-  }, [])
+  const { route, navigate } = useRouter();
+  
+  // Connect to pit timer backend (box window + telemetry)
+  // This connects to your Rust backend at pit_timer_backend/src/main.rs
+  const wsUrl = import.meta.env.VITE_PIT_TIMER_WS || 'ws://localhost:8765';
+  const { data: timerData, connected, error } = useWebSocket(wsUrl);
 
-  const { data, connected } = useTimerSocket(wsUrl)
+  // Mock pit probabilities data structure
+  // In production, integrate with rt_predictor (see PIT_PROBABILITIES_INTEGRATION.md)
+  const [pitProbs, setPitProbs] = React.useState([
+    { driver: 'M. Verstappen', team: 'Red Bull', p2: 0.87, p3: 0.73, trend: 'up' },
+    { driver: 'C. Leclerc', team: 'Ferrari', p2: 0.73, p3: 0.68, trend: 'up' },
+    { driver: 'S. Perez', team: 'Red Bull', p2: 0.68, p3: 0.62, trend: 'down' },
+    { driver: 'L. Hamilton', team: 'Mercedes', p2: 0.62, p3: 0.58, trend: 'up' },
+    { driver: 'F. Alonso', team: 'Aston Martin', p2: 0.58, p3: 0.52, trend: 'stable' },
+    { driver: 'G. Russell', team: 'Mercedes', p2: 0.54, p3: 0.48, trend: 'up' },
+    { driver: 'C. Sainz', team: 'Ferrari', p2: 0.45, p3: 0.42, trend: 'down' },
+    { driver: 'E. Ocon', team: 'Alpine', p2: 0.38, p3: 0.35, trend: 'stable' },
+  ]);
+
+  // Mock Williams car data (could also come from telemetry)
+  const williamsData = {
+    car23: {
+      driver: 'A. Albon',
+      number: '23',
+      position: 12,
+      lapTime: '1:14.523',
+      gap: '+24.5s',
+      tire: 'Medium',
+      tireLaps: 28
+    },
+    car2: {
+      driver: 'L. Sargeant',
+      number: '2',
+      position: 16,
+      lapTime: '1:15.102',
+      gap: '+38.2s',
+      tire: 'Hard',
+      tireLaps: 32
+    }
+  };
 
   return (
-    <>
-      <header className="dashboard-header">
-        <div className="logo">
-          <span className="f1-text">F1</span> DASHBOARD {connected ? '• online' : '• offline'}
-        </div>
-      </header>
-
-      <div className="dashboard-container">
-        <main className="dashboard-grid">
-          <section className="panel rival-boxing-panel">
-            <h2>RIVAL BOXING LIKELIHOOD</h2>
-            <div className="teams-list">
-              {[
-                { name: 'M. Verstappen', car: 'Red Bull', icon: 'red-bull-icon', p: 83 },
-                { name: 'F. Alonso', car: 'Aston Martin', icon: 'aston-martin-icon', p: 62 },
-                { name: 'E. Ocon', car: 'Alpine', icon: 'alpine-icon', p: 42 },
-                { name: 'L. Hamilton', car: 'Mercedes', icon: 'mercedes-icon', p: 75 },
-                { name: 'G. Russell', car: 'Mercedes', icon: 'mercedes-icon', p: 78 },
-                { name: 'C. Leclerc', car: 'Ferrari', icon: 'ferrari-icon', p: 55 },
-              ].map((t) => (
-                <div key={t.name} className="team-item">
-                  <div className="team-name">
-                    <span className={`team-icon ${t.icon}`}></span>
-                    <div className="driver-info">
-                      <span className="driver-name">{t.name}</span>
-                      <span className="car-name">{t.car}</span>
-                    </div>
-                  </div>
-                  <div className="progress-bar-container">
-                    <div
-                      className={`progress-bar ${t.p >= 80 ? 'green' : t.p >= 50 ? 'yellow' : 'red'}`}
-                      style={{ width: `${t.p}%` }}
-                    />
-                  </div>
-                  <span className="likelihood-value">{t.p}%</span>
-                  <i className={`fas ${t.p >= 60 ? 'fa-arrow-up trend-up' : 'fa-arrow-down trend-down'}`}></i>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="panel circuit-map-panel">
-            <img src="/circuit_map.png" alt="Circuit Map" className="circuit-map" />
-          </section>
-
-          <PitCountdown tSafe={data.t_safe} status={data.status} />
-        </main>
-      </div>
-    </>
-  )
+    <div className="app">
+      <Navigation 
+        currentRoute={route} 
+        onNavigate={navigate} 
+        connected={connected}
+        error={error}
+      />
+      
+      <main className="main-content">
+        {route === '/' && (
+          <LiveRacePage williamsData={williamsData} />
+        )}
+        {route === '/strategy' && (
+          <StrategyPage 
+            timerData={timerData}
+            pitProbs={pitProbs}
+            connected={connected}
+            error={error}
+          />
+        )}
+        {route === '/about' && (
+          <AboutPage />
+        )}
+      </main>
+    </div>
+  );
 }
