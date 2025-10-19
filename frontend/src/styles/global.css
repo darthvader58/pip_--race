@@ -304,6 +304,14 @@
     margin-left: 0.5rem;
   }
   
+  .service-status .status-ok {
+    color: #2ecc71;
+  }
+  
+  .service-status .status-error {
+    color: #e74c3c;
+  }
+  
   .strategy-grid {
     display: grid;
     grid-template-columns: 2fr 1fr;

@@ -1,6 +1,7 @@
 import React from 'react';
 import useRouter from './hooks/useRouter';
 import useWebSocket from './hooks/useWebSocket';
+import usePitProbabilities from './hooks/usePitProbabilities';
 import Navigation from './components/Navigation';
 import LiveRacePage from './pages/LiveRacePage';
 import StrategyPage from './pages/StrategyPage';
@@ -10,22 +11,16 @@ export default function App() {
   const { route, navigate } = useRouter();
   
   // Connect to pit timer backend (box window + telemetry)
-  // This connects to your Rust backend at pit_timer_backend/src/main.rs
-  const wsUrl = import.meta.env.VITE_PIT_TIMER_WS || 'ws://localhost:8765';
-  const { data: timerData, connected, error } = useWebSocket(wsUrl);
+  const timerWsUrl = import.meta.env.VITE_PIT_TIMER_WS || 'ws://localhost:8765';
+  const { data: timerData, connected: timerConnected, error: timerError } = useWebSocket(timerWsUrl);
 
-  // Mock pit probabilities data structure
-  // In production, integrate with rt_predictor (see PIT_PROBABILITIES_INTEGRATION.md)
-  const [pitProbs, setPitProbs] = React.useState([
-    { driver: 'M. Verstappen', team: 'Red Bull', p2: 0.87, p3: 0.73, trend: 'up' },
-    { driver: 'C. Leclerc', team: 'Ferrari', p2: 0.73, p3: 0.68, trend: 'up' },
-    { driver: 'S. Perez', team: 'Red Bull', p2: 0.68, p3: 0.62, trend: 'down' },
-    { driver: 'L. Hamilton', team: 'Mercedes', p2: 0.62, p3: 0.58, trend: 'up' },
-    { driver: 'F. Alonso', team: 'Aston Martin', p2: 0.58, p3: 0.52, trend: 'stable' },
-    { driver: 'G. Russell', team: 'Mercedes', p2: 0.54, p3: 0.48, trend: 'up' },
-    { driver: 'C. Sainz', team: 'Ferrari', p2: 0.45, p3: 0.42, trend: 'down' },
-    { driver: 'E. Ocon', team: 'Alpine', p2: 0.38, p3: 0.35, trend: 'stable' },
-  ]);
+  // Connect to bridge service for pit probabilities
+  const probsWsUrl = import.meta.env.VITE_PROBS_WS || 'ws://localhost:8081';
+  const { probabilities, connected: probsConnected, error: probsError } = usePitProbabilities(probsWsUrl);
+
+  // Combined connection status
+  const connected = timerConnected && probsConnected;
+  const error = timerError || probsError;
 
   // Mock Williams car data (could also come from telemetry)
   const williamsData = {
@@ -65,8 +60,10 @@ export default function App() {
         {route === '/strategy' && (
           <StrategyPage 
             timerData={timerData}
-            pitProbs={pitProbs}
+            pitProbs={probabilities}
             connected={connected}
+            timerConnected={timerConnected}
+            probsConnected={probsConnected}
             error={error}
           />
         )}
