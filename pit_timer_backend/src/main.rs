@@ -2,6 +2,7 @@ mod model;
 mod config;
 
 use tokio_tungstenite::accept_async;
+use tokio_tungstenite::tungstenite::{Error as WsError, error::ProtocolError};
 use tokio::net::TcpListener;
 use futures_util::{StreamExt, SinkExt};
 use std::path::PathBuf;
@@ -34,10 +35,10 @@ async fn main() {
 
     loop {
         match listener.accept().await {
-            Ok((stream, _)) => {
+            Ok((stream, addr)) => {
                 let tx_clone = tx.clone();
                 let rx = tx.subscribe();
-                tokio::spawn(handle_connection(stream, tx_clone, rx));
+                tokio::spawn(handle_connection(stream, addr.to_string(), tx_clone, rx));
             }
             Err(e) => {
                 eprintln!("Accept error: {}", e);
@@ -50,13 +51,22 @@ async fn main() {
 
 async fn handle_connection(
     stream: tokio::net::TcpStream,
+    peer_addr: String,
     tx: broadcast::Sender<TimerOut>,
     mut rx: broadcast::Receiver<TimerOut>,
 ) {
     let ws_stream = match accept_async(stream).await {
-        Ok(ws) => ws,
+        Ok(ws) => {
+            eprintln!("Client connected: {}", peer_addr);
+            ws
+        }
+        Err(WsError::Protocol(ProtocolError::HandshakeIncomplete)) => {
+            // Likely a TCP probe (e.g., healthcheck) that connected and closed without a WS handshake.
+            // Suppress noisy logging.
+            return;
+        }
         Err(e) => {
-            eprintln!("WebSocket handshake failed: {}", e);
+            eprintln!("WebSocket handshake failed from {}: {}", peer_addr, e);
             return;
         }
     };

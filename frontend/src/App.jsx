@@ -32,11 +32,14 @@ function useTimerSocket(url) {
 }
 
 function formatTime(seconds) {
-  if (seconds == null || !isFinite(seconds)) return '00:00'
+  if (seconds == null || !isFinite(seconds)) return '00:00.00'
   const s = Math.max(0, Math.floor(seconds))
   const mm = String(Math.floor(s / 60)).padStart(2, '0')
   const ss = String(s % 60).padStart(2, '0')
-  return `${mm}:${ss}`
+  // Show hundredths (2 digits)
+  const hundredths = Math.max(0, Math.floor((seconds - Math.floor(seconds)) * 100))
+  const hsStr = String(hundredths).padStart(2, '0')
+  return `${mm}:${ss}.${hsStr}`
 }
 
 function StatusBadge({ status }) {
@@ -51,18 +54,45 @@ function PitCountdown({ tSafe, status }) {
     setDisplay(tSafe ?? 0)
   }, [tSafe])
 
+  // Update timer every 30ms for smooth hundredths
   useEffect(() => {
+    let last = Date.now()
     const id = setInterval(() => {
-      setDisplay((v) => (v > 0 ? v - 1 : 0))
-    }, 1000)
+      setDisplay((prev) => {
+        if (prev <= 0) return 0
+        const now = Date.now()
+        const elapsed = (now - last) / 1000
+        last = now
+        return Math.max(0, prev - elapsed)
+      })
+    }, 30)
     return () => clearInterval(id)
   }, [])
 
+  // Map status to color class
+  let colorClass = '';
+  switch ((status || '').toUpperCase()) {
+    case 'GREEN':
+      colorClass = 'timer-green';
+      break;
+    case 'AMBER':
+      colorClass = 'timer-amber';
+      break;
+    case 'RED':
+      colorClass = 'timer-red';
+      break;
+    case 'LOCKED':
+    case 'LOCKED OUT':
+    case 'LOCKED_OUT':
+      colorClass = 'timer-locked';
+      break;
+    default:
+      colorClass = 'timer-neutral';
+  }
   return (
     <section className="panel pit-countdown-panel">
       <h2>PIT ENTRY COUNTDOWN <StatusBadge status={status} /></h2>
-      <div className="countdown-display" id="pitCountdown">{formatTime(display)}</div>
-      <button className="safe-pit-button">SAFE PIT</button>
+      <div className={`countdown-display ${colorClass}`} id="pitCountdown">{formatTime(display)}</div>
     </section>
   )
 }

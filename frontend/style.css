@@ -192,10 +192,40 @@ h2 {
     font-family: 'Orbitron', sans-serif;
     font-size: 5em; /* Larger font */
     font-weight: 700;
-    color: #00ffff;
-    text-shadow: 0 0 25px rgba(0, 255, 255, 0.8), 0 0 10px rgba(0, 255, 255, 0.5);
     margin-bottom: 30px;
     letter-spacing: 8px; /* Spaced out characters */
+    transition: color 0.2s, text-shadow 0.2s;
+    width: 8ch;
+    min-width: 8ch;
+    max-width: 8ch;
+    text-align: center;
+    box-sizing: border-box;
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+/* Timer digit color classes */
+.countdown-display.timer-green {
+    color: #28a745;
+    text-shadow: 0 0 25px #28a74599, 0 0 10px #28a74555;
+}
+.countdown-display.timer-amber {
+    color: #ffc107;
+    text-shadow: 0 0 25px #ffc10799, 0 0 10px #ffc10755;
+}
+.countdown-display.timer-red {
+    color: #e74c3c;
+    text-shadow: 0 0 25px #e74c3c99, 0 0 10px #e74c3c55;
+}
+.countdown-display.timer-locked {
+    color: #9aa0a6;
+    text-shadow: 0 0 25px #9aa0a699, 0 0 10px #9aa0a655;
+    opacity: 0.5;
+}
+.countdown-display.timer-neutral {
+    color: #00ffff;
+    text-shadow: 0 0 25px rgba(0, 255, 255, 0.8), 0 0 10px rgba(0, 255, 255, 0.5);
 }
 
 .safe-pit-button {
