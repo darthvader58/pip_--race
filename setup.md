@@ -6,14 +6,14 @@ BACKEND_URL=ws://localhost:8765 python telemetry_feed.py`
 Listening to localhost/8080
 
 ## Rival-Driver Box Classifier
-`python feeder_fastf1_cache.py \
-  --race "2023:Monaco" \
-  --cache ../data/fastf1_cache \
-  --meta ../artifacts/rl/meta.json \
-  --url http://localhost:8080/ingest \
-  --bridge http://localhost:8081/update \
-  --sleep 0.1 \
-  --echo`
+`python feeder_fastf1_cache.py \` <br>
+`  --race "2023:Monaco" \` <br>
+` --cache ../data/fastf1_cache \` <br>
+`  --meta ../artifacts/rl/meta.json \`<br>
+`  --url http://localhost:8080/ingest \`<br>
+`  --bridge http://localhost:8081/update \`<br>
+`  --sleep 0.1 \`<br>
+`  --echo`<br>
   (Local Setup)
   Listening to localhost/2716
 
