@@ -1,1 +1,0 @@
-// This file is no longer used. The app has been migrated to React (Vite) and logic lives in src/*.jsx.
