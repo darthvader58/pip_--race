@@ -3,8 +3,19 @@ mod config;
 
 use tokio_tungstenite::accept_async;
 use tokio::net::TcpListener;
-use futures_util::StreamExt;
+use futures_util::{StreamExt, SinkExt};
 use std::path::PathBuf;
+use tokio::sync::broadcast;
+use serde::Serialize;
+
+#[derive(Serialize, Debug, Clone)]
+struct TimerOut {
+    t_call: f64,
+    t_safe: f64,
+    status: &'static str,
+    lap_distance_m: f64,
+    speed_kph: f64,
+}
 
 #[tokio::main]
 async fn main() {
@@ -18,10 +29,15 @@ async fn main() {
     };
     eprintln!("🚀 Rust backend listening on ws://{}", bind_addr);
 
+    // Broadcast channel to fan out computed results to all connected clients
+    let (tx, _rx) = broadcast::channel::<TimerOut>(128);
+
     loop {
         match listener.accept().await {
             Ok((stream, _)) => {
-                tokio::spawn(handle_connection(stream));
+                let tx_clone = tx.clone();
+                let rx = tx.subscribe();
+                tokio::spawn(handle_connection(stream, tx_clone, rx));
             }
             Err(e) => {
                 eprintln!("Accept error: {}", e);
@@ -32,7 +48,11 @@ async fn main() {
     }
 }
 
-async fn handle_connection(stream: tokio::net::TcpStream) {
+async fn handle_connection(
+    stream: tokio::net::TcpStream,
+    tx: broadcast::Sender<TimerOut>,
+    mut rx: broadcast::Receiver<TimerOut>,
+) {
     let ws_stream = match accept_async(stream).await {
         Ok(ws) => ws,
         Err(e) => {
@@ -40,29 +60,53 @@ async fn handle_connection(stream: tokio::net::TcpStream) {
             return;
         }
     };
-    let (_, mut read) = ws_stream.split();
+    let (mut write, mut read) = ws_stream.split();
 
     // Try to resolve config path robustly: prefer workspace-relative, then CWD.
     let cfg_path = resolve_config_path();
     let cfg = config::TimerConfig::load(cfg_path.to_str().unwrap());
 
+    // Writer task: forwards broadcast messages to this websocket client
+    let mut write_task = tokio::spawn(async move {
+        while let Ok(out) = rx.recv().await {
+            if let Ok(text) = serde_json::to_string(&out) {
+                if write.send(tokio_tungstenite::tungstenite::Message::Text(text)).await.is_err() {
+                    break;
+                }
+            }
+        }
+    });
+
+    // Reader loop: process incoming telemetry, compute, and broadcast
     while let Some(msg) = read.next().await {
         if let Ok(msg) = msg {
             if msg.is_text() {
                 if let Ok(data) = serde_json::from_str::<model::TelemetryPacket>(&msg.to_string()) {
-                    let profile_status = match &data.speed_profile {
-                        Some(profile) => format!("profile({} samples)", profile.len()),
-                        None => "no profile".to_string()
-                    };
                     let (t_call, t_safe, status) = model::time_to_call(&data, &cfg);
+
+                    let out = TimerOut {
+                        t_call,
+                        t_safe,
+                        status,
+                        lap_distance_m: data.lap_distance_m,
+                        speed_kph: data.speed_kph,
+                    };
+
+                    // Log a compact line for observability
                     println!(
-                        "[ lap ] dist={:.1}m  speed={:.1}kph  {}  t_call={:.2}s  t_safe={:.2}s  STATUS={}",
-                        data.lap_distance_m, data.speed_kph, profile_status, t_call, t_safe, status
+                        "lap={:.1}m speed={:.1}kph t_call={:.2}s t_safe={:.2}s status={}",
+                        out.lap_distance_m, out.speed_kph, out.t_call, out.t_safe, out.status
                     );
+
+                    // Ignore send errors (no subscribers)
+                    let _ = tx.send(out);
                 }
             }
         }
     }
+
+    // Ensure writer task stops when reader ends
+    write_task.abort();
 }
 
 fn resolve_config_path() -> PathBuf {

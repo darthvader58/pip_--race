@@ -225,6 +225,19 @@ h2 {
     box-shadow: 0 0 20px rgba(227, 6, 19, 0.5);
 }
 
+.status-badge {
+    display: inline-block;
+    margin-left: 10px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8em;
+}
+.status-badge.green { background: #15391f; color: #28a745; border: 1px solid #28a74533; }
+.status-badge.yellow { background: #473d19; color: #ffc107; border: 1px solid #ffc10733; }
+.status-badge.red { background: #42201b; color: #e74c3c; border: 1px solid #e74c3c33; }
+.status-badge.neutral { background: #2a2f3b; color: #9aa0a6; border: 1px solid #9aa0a633; }
+
 /* Responsive Adjustments */
 @media (max-width: 1200px) {
     body { padding: 20px; }

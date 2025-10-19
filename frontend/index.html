@@ -1,135 +1,14 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>F1 Dashboard</title>
-    <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
-<body>
-    <header class="dashboard-header">
-        <div class="logo">
-            <span class="f1-text">F1</span> DASHBOARD
-        </div>
-    </header>
-
-    <div class="dashboard-container">
-        <main class="dashboard-grid">
-            <section class="panel rival-boxing-panel">
-                <h2>RIVAL BOXING LIKELIHOOD</h2>
-                <div class="teams-list">
-                    <!-- M. Verstappen -->
-                    <div class="team-item">
-                        <div class="team-name">
-                            <span class="team-icon red-bull-icon"></span>
-                            <div class="driver-info">
-                                <span class="driver-name">M. Verstappen</span>
-                                <span class="car-name">Red Bull</span>
-                            </div>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" data-likelihood="83"></div>
-                        </div>
-                        <span class="likelihood-value">83%</span>
-                        <i class="fas fa-arrow-up trend-up"></i>
-                    </div>
-
-                    <!-- F. Alonso -->
-                    <div class="team-item">
-                        <div class="team-name">
-                            <span class="team-icon aston-martin-icon"></span>
-                            <div class="driver-info">
-                                <span class="driver-name">F. Alonso</span>
-                                <span class="car-name">Aston Martin</span>
-                            </div>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" data-likelihood="62"></div>
-                        </div>
-                        <span class="likelihood-value">62%</span>
-                        <i class="fas fa-arrow-down trend-down"></i>
-                    </div>
-
-                    <!-- E. Ocon -->
-                    <div class="team-item">
-                        <div class="team-name">
-                            <span class="team-icon alpine-icon"></span>
-                            <div class="driver-info">
-                                <span class="driver-name">E. Ocon</span>
-                                <span class="car-name">Alpine</span>
-                            </div>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" data-likelihood="42"></div>
-                        </div>
-                        <span class="likelihood-value">42%</span>
-                        <i class="fas fa-arrow-down trend-down"></i>
-                    </div>
-
-                    <!-- L. Hamilton -->
-                    <div class="team-item">
-                        <div class="team-name">
-                            <span class="team-icon mercedes-icon"></span>
-                            <div class="driver-info">
-                                <span class="driver-name">L. Hamilton</span>
-                                <span class="car-name">Mercedes</span>
-                            </div>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" data-likelihood="75"></div>
-                        </div>
-                        <span class="likelihood-value">75%</span>
-                        <i class="fas fa-arrow-up trend-up"></i>
-                    </div>
-
-                    <!-- G. Russell -->
-                    <div class="team-item">
-                        <div class="team-name">
-                            <span class="team-icon mercedes-icon"></span>
-                            <div class="driver-info">
-                                <span class="driver-name">G. Russell</span>
-                                <span class="car-name">Mercedes</span>
-                            </div>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" data-likelihood="78"></div>
-                        </div>
-                        <span class="likelihood-value">78%</span>
-                        <i class="fas fa-arrow-up trend-up"></i>
-                    </div>
-
-                    <!-- C. Leclerc -->
-                    <div class="team-item">
-                        <div class="team-name">
-                            <span class="team-icon ferrari-icon"></span>
-                            <div class="driver-info">
-                                <span class="driver-name">C. Leclerc</span>
-                                <span class="car-name">Ferrari</span>
-                            </div>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" data-likelihood="55"></div>
-                        </div>
-                        <span class="likelihood-value">55%</span>
-                        <i class="fas fa-arrow-down trend-down"></i>
-                    </div>
-                </div>
-            </section>
-
-            <section class="panel circuit-map-panel">
-                <img src="circuit_map.png" alt="Circuit Map" class="circuit-map">
-            </section>
-
-            <section class="panel pit-countdown-panel">
-                <h2>PIT ENTRY COUNTDOWN</h2>
-                <div class="countdown-display" id="pitCountdown">00:00</div>
-                <button class="safe-pit-button">SAFE PIT</button>
-            </section>
-        </main>
-    </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+  </html>
