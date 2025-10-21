@@ -1,14 +1,46 @@
-# Use official Python image
-FROM python:3.11-slim
-WORKDIR /app
+# Multi-stage build for Rust telemetry feed service
 
-# Install dependencies
-COPY requirements.txt ./requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+# Stage 1: Build
+FROM rust:1.75-slim as builder
+
+WORKDIR /usr/src/app
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy manifests
+COPY Cargo.toml Cargo.lock ./
 
 # Copy source code
-COPY telemetry_feed.py ./telemetry_feed.py
-COPY speed_profile_calculator.py ./speed_profile_calculator.py
+COPY src ./src
+COPY tests ./tests
 
+# Build release binary
+RUN cargo build --release
+
+# Stage 2: Runtime
+FROM debian:bookworm-slim
+
+WORKDIR /app
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    libssl3 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy binary from builder
+COPY --from=builder /usr/src/app/target/release/telemetry-feed /app/telemetry-feed
+
+# Environment variables (can be overridden)
 ENV BACKEND_URL=ws://rust-backend:8765
-CMD ["python", "telemetry_feed.py"]
+ENV TEAM=Williams
+ENV YEAR=2023
+ENV GP=Monaco
+ENV SESSION_TYPE=R
+
+# Run the telemetry feed
+CMD ["/app/telemetry-feed"]
