@@ -481,75 +481,6 @@ VITE_PROBS_WS=ws://localhost:8081
 
 ---
 
-## Project Structure
-
-```
-.
-├── rival-boxing/
-│   ├── trainer/                 # QR-DQN training scripts
-│   │   └── train_qrdqn.py
-│   ├── rt_predictor/            # Rust inference server
-│   │   ├── src/
-│   │   │   ├── main.rs          # Axum HTTP API
-│   │   │   └── model.rs         # TorchScript loader
-│   │   └── Cargo.toml
-│   ├── scripts/
-│   │   ├── export_torchscript_26.py
-│   │   ├── predict_qrdqn.py           # Single-driver analysis
-│   │   └── predict_qrdqn_multidriver.py
-│   ├── ingest/
-│   │   └── feeder_fastf1_cache.py     # FastF1 → predictor pipeline
-│   └── artifacts/
-│       ├── rl/                   # Model checkpoints
-│       │   ├── qrdqn.pt
-│       │   ├── qrdqn_torchscript.pt
-│       │   ├── meta.json
-│       │   └── calib_platt.json
-│       └── reports/              # Training metrics
-│
-├── pit_timer_backend/
-│   ├── src/
-│   │   ├── main.rs               # WebSocket server
-│   │   ├── model.rs              # Timing calculations
-│   │   ├── config.rs             # Track config loader
-│   │   └── tracks/
-│   │       └── monaco.json
-│   └── Cargo.toml
-│
-├── telemetry_feed/
-│   ├── telemetry_feed.py         # FastF1 → pit_timer stream
-│   ├── speed_profile_calculator.py
-│   └── test_speed_profile.py
-│
-├── bridge-service/
-│   ├── server.js                 # Node.js WebSocket bridge
-│   └── package.json
-│
-└── frontend/
-    ├── src/
-    │   ├── App.jsx
-    │   ├── hooks/
-    │   │   ├── useWebSocket.js       # Pit timer connection
-    │   │   ├── usePitProbabilities.js # Bridge connection
-    │   │   └── useRouter.js
-    │   ├── components/
-    │   │   ├── PitProbabilities.jsx  # Grid-wide pit probs
-    │   │   ├── BoxWindow.jsx         # Pit timer display
-    │   │   ├── CarCard.jsx
-    │   │   ├── TrackMap.jsx
-    │   │   └── Navigation.jsx
-    │   ├── pages/
-    │   │   ├── LiveRacePage.jsx
-    │   │   ├── StrategyPage.jsx
-    │   │   └── AboutPage.jsx
-    │   └── styles/
-    │       └── global.css
-    ├── package.json
-    └── vite.config.js
-```
-
----
-
 ## Key Design Decisions
 
 ### Why QR-DQN over Classification?
@@ -634,8 +565,4 @@ vite = 5.x         # Build tool
 
 ---
 
-## Contact
-
-For questions about the models or architecture, please open an issue or refer to the inline code documentation.
-
-**Happy Racing! 🏁**
+**PRESSURE IS PRIVILEGE! 🏁**
