@@ -1,0 +1,35 @@
+---
+title: Architecture
+description: How Python, PyTorch, C++, Go, Rust, and Linux fit together.
+---
+
+```text
+Telemetry JSONL / HPC stream
+        |
+        v
+Python contracts: HpcTelemetryPacket
+        |
+        v
+PitWit runtime
+  FeatureExtractor
+  OnnxRunner
+        |
+        +--> PyTorch training/export -> ONNX
+        +--> ONNX Runtime for model inference
+        +--> C++ native scorer for hot fallback kernels
+        +--> Go worker for parallel replay and batch scoring
+        +--> Rust sidecar for timing/fan-out service boundaries
+        |
+        v
+Data and visualization products
+  JSONL, CSV, summary JSON, SVG, Vega-Lite specs
+```
+
+## Language Responsibilities
+
+- **Python**: public API, feature orchestration, notebooks, data products, visualization specs.
+- **PyTorch**: model development and ONNX export.
+- **C++**: native low-level scoring/preprocessing kernels.
+- **Go**: parallel JSONL replay and batch scoring workers.
+- **Rust**: low-latency timing sidecars and async service integration.
+- **Linux**: target production deployment for CPU pinning, predictable scheduling, and colocated services.

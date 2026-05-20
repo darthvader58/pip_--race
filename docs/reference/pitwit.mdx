@@ -1,0 +1,26 @@
+---
+title: PitWit
+description: Public Python runtime API.
+---
+
+```python
+from pip_race import HpcTelemetryPacket, PitWit
+
+packet = HpcTelemetryPacket(
+    car_id="ALB",
+    lap=42,
+    lap_distance_m=2410,
+    speed_kph=178,
+    tire_age_laps=29,
+    compound="MEDIUM",
+    track_status="VSC",
+)
+
+pitwit = PitWit()
+frame = pitwit.process(packet)
+```
+
+Important methods:
+
+- `process(packet)`: returns one inference frame.
+- `process_many(packets)`: returns a list of inference frames.

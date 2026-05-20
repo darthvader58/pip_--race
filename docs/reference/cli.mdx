@@ -1,0 +1,15 @@
+---
+title: CLI
+description: Command line utilities for inference and benchmarking.
+---
+
+```bash
+pip-race infer --input telemetry.jsonl --output frames.jsonl
+pip-race infer --input telemetry.jsonl --output frames.csv --format csv
+pip-race infer --input telemetry.jsonl --output frames.jsonl --summary summary.json --svg pit_risk.svg
+pip-race benchmark --iterations 10000 --warmup 1000
+```
+
+Use `--model model.onnx` to run ONNX Runtime.
+
+Use `--redis-url redis://localhost:6379/0` to publish frames while scoring.

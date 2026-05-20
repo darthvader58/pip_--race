@@ -1,0 +1,27 @@
+---
+title: Accelerators
+description: Optional C++, Go, and Rust components.
+---
+
+## C++ Native Scorer
+
+```bash
+cmake -S cpp/pip_race_native -B build/native -DCMAKE_BUILD_TYPE=Release
+cmake --build build/native
+export PIP_RACE_NATIVE_LIB="$PWD/build/native/libpip_race_native.so"
+```
+
+## Go Parallel Worker
+
+```bash
+cd go/pitwit_worker
+go build -o ../../build/pitwit-worker .
+cat telemetry.jsonl | ../../build/pitwit-worker --workers 8 > frames.jsonl
+```
+
+## Rust Sidecar
+
+```bash
+cd pit_timer_backend
+cargo run
+```

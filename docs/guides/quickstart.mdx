@@ -1,0 +1,36 @@
+---
+title: Quickstart
+description: Run PitWit inference, export data, and generate a chart.
+---
+
+`pip-race` exposes a Python runtime named `PitWit`.
+
+```python
+from pip_race import HpcTelemetryPacket, PitWit
+from pip_race.data import frames_to_rows, summarize_frames
+from pip_race.visualization import write_pit_risk_svg
+
+packets = [
+    HpcTelemetryPacket(
+        car_id="ALB",
+        lap=42,
+        lap_distance_m=2410,
+        speed_kph=178,
+        tire_age_laps=29,
+        compound="MEDIUM",
+        track_status="VSC",
+    )
+]
+
+pitwit = PitWit()
+frames = pitwit.process_many(packets)
+
+print(summarize_frames(frames))
+print(frames_to_rows(frames))
+write_pit_risk_svg(frames, "pit_risk.svg")
+```
+
+```bash
+pip-race infer --input telemetry.jsonl --output frames.jsonl --summary summary.json --svg pit_risk.svg
+pip-race benchmark --iterations 10000 --warmup 1000
+```

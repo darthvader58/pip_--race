@@ -118,6 +118,7 @@ svg = pit_risk_svg(frames)
 
 See [docs/api.md](docs/api.md) for the concise API reference.
 See [docs/low_latency.md](docs/low_latency.md) for the Rust/C++/Python/Linux low-latency workflow.
+Mintlify-style documentation is configured by [docs.json](docs.json), with guide and reference pages under `docs/`.
 
 ### Telemetry Contracts
 
@@ -264,6 +265,12 @@ Run the example:
 
 ```bash
 python examples/basic_pitwit.py
+```
+
+Open the notebook demo:
+
+```bash
+jupyter notebook notebooks/pitwit_demo.ipynb
 ```
 
 Run the CLI:

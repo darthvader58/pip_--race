@@ -1,0 +1,40 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "pip-race",
+  "colors": {
+    "primary": "#0F766E",
+    "light": "#14B8A6",
+    "dark": "#134E4A"
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Start",
+            "pages": [
+              "docs/guides/quickstart",
+              "docs/guides/architecture",
+              "docs/guides/low-latency"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Reference",
+        "groups": [
+          {
+            "group": "API",
+            "pages": [
+              "docs/reference/pitwit",
+              "docs/reference/accelerators",
+              "docs/reference/cli"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

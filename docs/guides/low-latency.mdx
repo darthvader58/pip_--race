@@ -1,0 +1,23 @@
+---
+title: Low-Latency Workflow
+description: Practices and commands for sub-ms inference measurements.
+---
+
+Sub-ms latency is measured on the model/runtime path, not chart rendering or external network hops.
+
+Recommended workflow:
+
+1. Train in PyTorch.
+2. Export to ONNX.
+3. Warm the ONNX Runtime session.
+4. Use compact fixed-width features.
+5. Keep batch size at 1 for live decisions.
+6. Use C++ kernels for hot custom scoring paths.
+7. Use Go workers for parallel replay/batch scoring.
+8. Use Rust sidecars for timing and async fan-out.
+9. Pin Linux CPU cores for production inference workers.
+
+```bash
+pip-race benchmark --iterations 10000 --warmup 1000
+taskset -c 2 pip-race benchmark --iterations 10000 --warmup 1000
+```
