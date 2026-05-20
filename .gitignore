@@ -9,7 +9,9 @@ venv/
 
 # Node/frontend
 node_modules/
+**/node_modules/
 dist/
+**/dist/
 dist-ssr/
 *.log
 
@@ -19,7 +21,11 @@ target/
 
 # FastF1 and local generated data
 telemetry_feed/fastf1_cache/
+**/fastf1_cache/
+rival-boxing/data/fastf1_cache/
 *.ff1pkl
+*.sqlite
+*.sqlite3
 dump.rdb
 
 # OS/editor
@@ -30,5 +36,8 @@ dump.rdb
 
 # Large generated model/report outputs
 rival-boxing/artifacts/reports/
+rival-boxing/artifacts/reports/**
+rival-boxing/artifacts/plots/
+rival-boxing/artifacts/cache/
 rival-boxing/rt_predictor/target/
 pit_timer_backend/target/
