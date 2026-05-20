@@ -21,6 +21,12 @@ jobs:
         run: python -m pip install -e ".[dev]"
       - name: Run tests
         run: python -m pytest tests/test_pipeline.py telemetry_feed/test_speed_profile.py
+      - name: Smoke test CLI
+        run: |
+          printf '{"car_id":"ALB","lap":42,"lap_distance_m":2410,"speed_kph":178,"tire_age_laps":29,"compound":"MEDIUM","track_status":"VSC"}\n' \
+            | pip-race infer --input - --output -
+      - name: Smoke test benchmark
+        run: pip-race benchmark --iterations 20 --warmup 2
 
   rust:
     name: Rust sidecar check
@@ -41,3 +47,15 @@ jobs:
         run: |
           cmake -S cpp/pip_race_native -B build/native -DCMAKE_BUILD_TYPE=Release
           cmake --build build/native
+      - name: Smoke test native scorer through Python
+        run: |
+          python -m pip install -e .
+          PIP_RACE_NATIVE_LIB="$PWD/build/native/libpip_race_native.so" python - <<'PY'
+          from pip_race.inference import NativeScorer
+
+          features = [[49.4, 0, 0, 29, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.82, 0.1]]
+          pit_risk, tire_degradation, confidence = NativeScorer().predict(features)
+          assert 0.0 <= pit_risk <= 1.0
+          assert 0.0 <= tire_degradation <= 1.0
+          assert 0.5 <= confidence <= 1.0
+          PY
