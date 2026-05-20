@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from time import perf_counter_ns
+from collections.abc import Iterable
 
 from pip_race.contracts import DashboardFrame, HpcTelemetryPacket, InferenceResult
 from pip_race.features import FeatureExtractor
@@ -37,6 +38,11 @@ class PitWallPipeline:
             ts_ns=packet.ts_ns,
         )
         return DashboardFrame(telemetry=packet, inference=result, status=self._status(pit_risk))
+
+    def process_many(self, packets: Iterable[HpcTelemetryPacket]) -> list[DashboardFrame]:
+        """Process an iterable of telemetry packets and return dashboard-ready frames."""
+
+        return [self.process(packet) for packet in packets]
 
     def _status(self, pit_risk: float) -> str:
         if pit_risk >= self.red_threshold:

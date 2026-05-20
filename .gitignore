@@ -10,6 +10,8 @@ venv/
 # Node/frontend
 node_modules/
 **/node_modules/
+frontend/
+bridge-service/
 dist/
 **/dist/
 dist-ssr/

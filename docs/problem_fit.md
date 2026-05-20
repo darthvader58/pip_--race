@@ -17,9 +17,9 @@ Primary references:
 1. HPC or trackside processes emit normalized telemetry frames.
 2. Python performs feature extraction and ONNX inference with sub-ms single-frame model latency.
 3. PyTorch owns training and model export into ONNX.
-4. Redis provides low-latency pub/sub plus a short replayable stream for dashboard clients.
-5. Rust services handle hard real-time fan-out, timing math, and dashboard bridge work.
-6. Docker Compose runs Redis, the Python inference publisher, Rust services, and the web dashboard as a reproducible stack.
+4. Redis provides low-latency pub/sub plus a short replayable stream for downstream tools.
+5. Rust services handle hard real-time fan-out and timing math when a Python-only deployment is not enough.
+6. Docker Compose runs infrastructure sidecars such as Redis, the Python inference publisher, and the Rust timer service.
 
 ## Latency Budget
 
@@ -28,9 +28,9 @@ Target budget for a single frame on localhost or same-rack deployment:
 - Feature extraction: 20-100 us
 - ONNX Runtime CPU inference for the compact MLP: 50-500 us
 - Redis publish: 100-400 us on local network
-- Rust fan-out/dashboard bridge: 50-300 us before browser rendering
+- Rust fan-out/timer sidecar: 50-300 us in colocated deployments
 
-The sub-ms target should be interpreted as model-path latency or backend pipeline latency under colocated services. Browser paint and WAN transport are separate budgets.
+The sub-ms target should be interpreted as model-path latency or backend pipeline latency under colocated services. Notebook rendering, BI visualization, browser paint, and WAN transport are separate budgets.
 
 ## Initial ML Task
 
