@@ -5,6 +5,7 @@
 - **Python + PyTorch** for model development, training, feature experiments, and ONNX export.
 - **ONNX Runtime** for production model execution.
 - **C++** for optional native scoring kernels and future custom preprocessing/postprocessing kernels.
+- **Go** for parallel JSONL replay and batch scoring workers.
 - **Rust** for async fan-out, timing sidecars, and low-latency service boundaries.
 - **Linux** as the target production runtime for predictable scheduling, CPU affinity, and container deployment.
 
@@ -23,6 +24,9 @@ Linux host / HPC node
   |
   +-- Redis sidecar
   |     pub/sub + replayable streams
+  |
+  +-- Go worker
+  |     parallel JSONL replay / batch scoring
   |
   +-- Rust sidecar
         pit timing, fan-out, websocket or TCP integration
@@ -111,4 +115,29 @@ Run:
 cd pit_timer_backend
 cargo check
 cargo run
+```
+
+## Go Parallel Worker
+
+The Go worker is useful for offline replay and batch scoring when you want simple parallelism and static deployment outside the Python process.
+
+Build:
+
+```bash
+cd go/pitwit_worker
+go build -o ../../build/pitwit-worker .
+```
+
+Run:
+
+```bash
+cat telemetry.jsonl | ./build/pitwit-worker --workers 8 > frames.jsonl
+```
+
+Python wrapper:
+
+```python
+from pip_race.inference import GoPitWitWorker
+
+frames = GoPitWitWorker("./build/pitwit-worker", workers=8).process_many(packets)
 ```

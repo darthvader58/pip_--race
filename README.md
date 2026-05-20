@@ -16,6 +16,7 @@ See [docs/problem_fit.md](docs/problem_fit.md) for the real-world problem-soluti
 - Extracts online features from speed, tire age, compound, throttle/brake, track status, and lap position.
 - Runs model inference through ONNX Runtime when a model is supplied.
 - Supports an optional C++ native scoring kernel for low-level inference/preprocessing paths.
+- Ships an optional Go worker for parallel JSONL replay and batch scoring.
 - Provides a deterministic fallback model for development and tests.
 - Returns structured `DashboardFrame` objects with pit risk, tire degradation, confidence, latency, and alert status.
 - Converts inference frames into table rows, JSONL, CSV, and summary metrics.
@@ -51,6 +52,7 @@ PitWit
         +--> frames_to_rows / summarize_frames / write_frames_csv
         +--> pit_risk_svg / Vega-Lite specs
         +--> RedisDashboardPublisher
+        +--> Go parallel worker
         +--> Rust pit-timer sidecar
 ```
 
@@ -243,6 +245,7 @@ pip_race/                 Python library
   inference/              ONNX and PyTorch model utilities
   streaming/              Redis publishers
 cpp/pip_race_native/      Optional C++ native scorer
+go/pitwit_worker/         Optional Go parallel JSONL worker
 pit_timer_backend/        Optional Rust timing sidecar
 telemetry_feed/           FastF1/replay utilities and speed-profile tests
 examples/                 Library usage examples

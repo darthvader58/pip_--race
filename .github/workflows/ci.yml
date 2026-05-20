@@ -59,3 +59,19 @@ jobs:
           assert 0.0 <= tire_degradation <= 1.0
           assert 0.5 <= confidence <= 1.0
           PY
+
+  go:
+    name: Go worker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+      - name: Build Go worker
+        working-directory: go/pitwit_worker
+        run: go build -o ../../build/pitwit-worker .
+      - name: Smoke test Go worker
+        run: |
+          printf '{"car_id":"ALB","lap":42,"lap_distance_m":2410,"speed_kph":178,"tire_age_laps":29,"compound":"MEDIUM","track_status":"VSC"}\n' \
+            | ./build/pitwit-worker --workers 2

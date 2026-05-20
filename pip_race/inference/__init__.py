@@ -1,4 +1,5 @@
+from pip_race.inference.go_worker import GoPitWitWorker
 from pip_race.inference.native import NativeScorer
 from pip_race.inference.onnx_runner import OnnxRunner
 
-__all__ = ["NativeScorer", "OnnxRunner"]
+__all__ = ["GoPitWitWorker", "NativeScorer", "OnnxRunner"]
