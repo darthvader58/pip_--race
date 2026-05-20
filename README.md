@@ -112,6 +112,8 @@ svg = pit_risk_svg(frames)
 
 ## Core APIs
 
+See [docs/api.md](docs/api.md) for the concise API reference.
+
 ### Telemetry Contracts
 
 ```python
@@ -208,6 +210,8 @@ The intended lifecycle is:
 3. Load with `OnnxRunner`.
 4. Run through `PitWallPipeline`.
 5. Export frames as data, visualization specs, SVG reports, or Redis messages.
+
+Use [docs/model_card_template.md](docs/model_card_template.md) for every model you train or publish.
 
 ## Docker
 
