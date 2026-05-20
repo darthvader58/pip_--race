@@ -15,6 +15,7 @@ See [docs/problem_fit.md](docs/problem_fit.md) for the real-world problem-soluti
 - Normalizes HPC or simulator telemetry into typed Python objects.
 - Extracts online features from speed, tire age, compound, throttle/brake, track status, and lap position.
 - Runs model inference through ONNX Runtime when a model is supplied.
+- Supports an optional C++ native scoring kernel for low-level inference/preprocessing paths.
 - Provides a deterministic fallback model for development and tests.
 - Returns structured `DashboardFrame` objects with pit risk, tire degradation, confidence, latency, and alert status.
 - Converts inference frames into table rows, JSONL, CSV, and summary metrics.
@@ -23,6 +24,7 @@ See [docs/problem_fit.md](docs/problem_fit.md) for the real-world problem-soluti
   - Dependency-free SVG pit-risk charts.
 - Publishes optional Redis pub/sub and Redis Stream frames for external dashboards.
 - Keeps Rust available as a low-latency timing/fan-out sidecar, not as the primary library interface.
+- Targets Linux production workflows for repeatable sub-ms model-path latency.
 
 ## Pipeline
 
@@ -40,7 +42,7 @@ FeatureExtractor
         |
         v
 OnnxRunner
-  ONNX Runtime model or deterministic dev fallback
+  ONNX Runtime model, optional C++ native kernel, or deterministic dev fallback
         |
         v
 PitWallPipeline
@@ -113,6 +115,7 @@ svg = pit_risk_svg(frames)
 ## Core APIs
 
 See [docs/api.md](docs/api.md) for the concise API reference.
+See [docs/low_latency.md](docs/low_latency.md) for the Rust/C++/Python/Linux low-latency workflow.
 
 ### Telemetry Contracts
 
@@ -239,6 +242,7 @@ pip_race/                 Python library
   visualization.py        SVG and Vega-Lite visualization helpers
   inference/              ONNX and PyTorch model utilities
   streaming/              Redis publishers
+cpp/pip_race_native/      Optional C++ native scorer
 pit_timer_backend/        Optional Rust timing sidecar
 telemetry_feed/           FastF1/replay utilities and speed-profile tests
 examples/                 Library usage examples

@@ -31,3 +31,13 @@ jobs:
       - name: Check pit timer
         working-directory: pit_timer_backend
         run: cargo check
+
+  native:
+    name: C++ native scorer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build native scorer
+        run: |
+          cmake -S cpp/pip_race_native -B build/native -DCMAKE_BUILD_TYPE=Release
+          cmake --build build/native

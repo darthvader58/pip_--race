@@ -3,13 +3,22 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Sequence
 
+from pip_race.inference.native import NativeScorer
+
 
 class OnnxRunner:
     """Thin ONNX Runtime wrapper with a deterministic fallback for dev/test."""
 
-    def __init__(self, model_path: str | Path | None = None, providers: list[str] | None = None):
+    def __init__(
+        self,
+        model_path: str | Path | None = None,
+        providers: list[str] | None = None,
+        native_library_path: str | Path | None = None,
+        use_native_fallback: bool = True,
+    ):
         self.model_path = Path(model_path) if model_path else None
         self.session = None
+        self.native = NativeScorer.try_load(native_library_path) if use_native_fallback and not self.model_path else None
         self.input_name = "features"
         if self.model_path:
             try:
@@ -33,6 +42,9 @@ class OnnxRunner:
             tire_degradation = float(probs[1]) if probs.shape[0] > 1 else pit_risk
             confidence = float(max(pit_risk, 1.0 - pit_risk))
             return pit_risk, tire_degradation, confidence
+
+        if self.native is not None:
+            return self.native.predict(features)
 
         row = features[0]
         score = float(row[3] * 0.08 + row[11] * 0.65 + row[14] * 0.75)

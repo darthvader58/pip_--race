@@ -21,6 +21,10 @@ dist-ssr/
 target/
 **/target/
 
+# Native build outputs
+build/
+*.so
+
 # FastF1 and local generated data
 telemetry_feed/fastf1_cache/
 **/fastf1_cache/
