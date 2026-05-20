@@ -8,6 +8,7 @@ from typing import TextIO
 
 from pip_race.contracts import HpcTelemetryPacket
 from pip_race.data import frames_to_jsonl, summarize_frames, write_frames_csv
+from pip_race.benchmark import run_pipeline_benchmark
 from pip_race.inference import OnnxRunner
 from pip_race.pipeline import PitWallPipeline
 from pip_race.visualization import write_pit_risk_svg
@@ -26,6 +27,12 @@ def main(argv: list[str] | None = None) -> int:
     infer.add_argument("--svg", default=None, help="Write a pit-risk SVG chart to this path.")
     infer.add_argument("--redis-url", default=None, help="Optionally publish each frame to Redis.")
     infer.set_defaults(func=_cmd_infer)
+
+    bench = subparsers.add_parser("benchmark", help="Measure single-frame pipeline latency.")
+    bench.add_argument("--iterations", type=int, default=10_000)
+    bench.add_argument("--warmup", type=int, default=1_000)
+    bench.add_argument("--model", default=None, help="Optional ONNX model path.")
+    bench.set_defaults(func=_cmd_benchmark)
 
     args = parser.parse_args(argv)
     args.func(args)
@@ -51,6 +58,12 @@ def _cmd_infer(args: argparse.Namespace) -> None:
 
     if args.svg:
         write_pit_risk_svg(frames, args.svg)
+
+
+def _cmd_benchmark(args: argparse.Namespace) -> None:
+    pipeline = PitWallPipeline(runner=OnnxRunner(args.model) if args.model else None)
+    result = run_pipeline_benchmark(pipeline=pipeline, iterations=args.iterations, warmup=args.warmup)
+    print(result.to_json())
 
 
 def _read_packets(input_path: str, stdin: TextIO) -> list[HpcTelemetryPacket]:

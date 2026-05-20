@@ -136,6 +136,16 @@ Default outputs:
 pip-race infer --input telemetry.jsonl --output frames.jsonl
 pip-race infer --input telemetry.jsonl --output frames.csv --format csv
 pip-race infer --input telemetry.jsonl --output frames.jsonl --summary summary.json --svg pit_risk.svg
+pip-race benchmark --iterations 10000 --warmup 1000
 ```
 
 Use `--model model.onnx` for ONNX Runtime inference and `--redis-url redis://localhost:6379/0` to publish frames.
+
+## Benchmarking
+
+```python
+from pip_race import run_pipeline_benchmark
+
+result = run_pipeline_benchmark(iterations=10_000, warmup=1_000)
+print(result.p50_ns, result.p95_ns, result.p99_ns)
+```

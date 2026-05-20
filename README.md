@@ -268,6 +268,7 @@ Run the CLI:
 ```bash
 pip-race infer --input telemetry.jsonl --output frames.jsonl --summary summary.json --svg pit_risk.svg
 pip-race infer --input telemetry.jsonl --output frames.csv --format csv
+pip-race benchmark --iterations 10000 --warmup 1000
 ```
 
 ## Project Status

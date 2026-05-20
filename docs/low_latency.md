@@ -81,6 +81,21 @@ For benchmarking, run on an otherwise quiet host and report:
 - batch size
 - number of frames
 
+The library includes a benchmark command:
+
+```bash
+pip-race benchmark --iterations 10000 --warmup 1000
+```
+
+Programmatic usage:
+
+```python
+from pip_race import run_pipeline_benchmark
+
+result = run_pipeline_benchmark(iterations=10_000, warmup=1_000)
+print(result.to_json())
+```
+
 ## Rust Sidecar
 
 The Rust sidecar in `pit_timer_backend` is not required for the Python library, but it is useful when deployment needs:

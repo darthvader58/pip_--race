@@ -3,6 +3,7 @@ from pip_race.data import frames_to_jsonl, frames_to_rows, summarize_frames
 from pip_race.pipeline import PitWallPipeline
 from pip_race.visualization import pit_risk_svg, pit_risk_vega_spec, status_bar_vega_spec
 from pip_race.cli import main as cli_main
+from pip_race.benchmark import run_pipeline_benchmark
 
 
 def test_pipeline_emits_dashboard_frame_under_sub_ms_model_latency():
@@ -82,3 +83,12 @@ def test_cli_writes_jsonl_summary_and_svg(tmp_path):
     assert output_path.read_text(encoding="utf-8").count("\n") == 1
     assert '"frames": 1' in summary_path.read_text(encoding="utf-8")
     assert svg_path.read_text(encoding="utf-8").startswith("<svg")
+
+
+def test_benchmark_returns_latency_percentiles():
+    result = run_pipeline_benchmark(iterations=5, warmup=1)
+
+    assert result.iterations == 5
+    assert result.p50_ns > 0
+    assert result.p95_ns >= result.p50_ns
+    assert result.p99_ns >= result.p95_ns
