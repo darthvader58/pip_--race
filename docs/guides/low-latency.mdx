@@ -12,12 +12,14 @@ Recommended workflow:
 3. Warm the ONNX Runtime session.
 4. Use compact fixed-width features.
 5. Keep batch size at 1 for live decisions.
-6. Use C++ kernels for hot custom scoring paths.
-7. Use Go workers for parallel replay/batch scoring.
-8. Use Rust sidecars for timing and async fan-out.
-9. Pin Linux CPU cores for production inference workers.
+6. Select `cuda`, `tensorrt`, `metal`, or `auto` only after benchmarking against CPU.
+7. Use C++ kernels for hot custom scoring paths.
+8. Use Go workers for parallel replay/batch scoring.
+9. Use Rust sidecars for timing and async fan-out.
+10. Pin Linux CPU cores for production inference workers.
 
 ```bash
 pip-race benchmark --iterations 10000 --warmup 1000
+pip-race benchmark --model model.onnx --accelerator auto --iterations 10000 --warmup 1000
 taskset -c 2 pip-race benchmark --iterations 10000 --warmup 1000
 ```

@@ -7,11 +7,14 @@ description: Command line utilities for inference and benchmarking.
 pip-race infer --input telemetry.jsonl --output frames.jsonl
 pip-race infer --input telemetry.jsonl --output frames.csv --format csv
 pip-race infer --input telemetry.jsonl --output frames.jsonl --summary summary.json --svg pit_risk.svg
+pip-race infer --model model.onnx --accelerator cuda --input telemetry.jsonl --output frames.jsonl
 pip-race benchmark --iterations 10000 --warmup 1000
+pip-race benchmark --model model.onnx --accelerator auto --iterations 10000 --warmup 1000
 ```
 
 PitWit uses these commands for local inference, replay, export, and latency measurement.
 
 Use `--model model.onnx` to run ONNX Runtime.
+Use `--accelerator cpu|cuda|tensorrt|coreml|metal|auto` to select the ONNX Runtime execution provider preset.
 
 Use `--redis-url redis://localhost:6379/0` to publish frames while scoring.

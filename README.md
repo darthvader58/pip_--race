@@ -158,6 +158,16 @@ from pip_race import PitWit
 pitwit = PitWit(runner=OnnxRunner("model.onnx"))
 ```
 
+To select GPU-class ONNX Runtime providers:
+
+```python
+cuda_runner = OnnxRunner("model.onnx", accelerator="cuda")
+metal_runner = OnnxRunner("model.onnx", accelerator="metal")
+auto_runner = OnnxRunner("model.onnx", accelerator="auto")
+```
+
+`cuda` and `tensorrt` target NVIDIA Linux deployments. `metal` maps to ONNX Runtime's CoreML execution provider on macOS, which is the practical route to Apple GPU/ANE acceleration from this Python library.
+
 ### Data Products
 
 ```python

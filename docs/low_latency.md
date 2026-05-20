@@ -18,7 +18,7 @@ Linux host / HPC node
   |     HpcTelemetryPacket
   |       -> FeatureExtractor
   |       -> OnnxRunner
-  |          -> ONNX Runtime CPUExecutionProvider
+  |          -> ONNX Runtime CPU/CUDA/TensorRT/CoreML provider
   |          -> optional C++ native fallback kernel
   |       -> DashboardFrame
   |
@@ -54,6 +54,30 @@ export PIP_RACE_NATIVE_LIB="$PWD/build/native/libpip_race_native.dylib"
 ```
 
 When no ONNX model path is supplied, `OnnxRunner` will try to load this native scorer first. If unavailable, it uses the pure-Python deterministic fallback.
+
+## CUDA, TensorRT, and Metal-Class Execution
+
+PitWit does not ship handwritten CUDA or Metal shaders. It uses ONNX Runtime execution providers, which is the production-friendly route for model acceleration from Python:
+
+- `accelerator="cuda"` selects `CUDAExecutionProvider` for NVIDIA GPUs.
+- `accelerator="tensorrt"` selects TensorRT first, then CUDA, then CPU fallback.
+- `accelerator="metal"` selects `CoreMLExecutionProvider` on macOS, which can use Apple GPU/ANE paths under ONNX Runtime.
+- `accelerator="auto"` chooses the fastest available provider preset in TensorRT, CUDA, CoreML, CPU order.
+
+Install the GPU ONNX Runtime package for NVIDIA deployments:
+
+```bash
+pip install -e ".[cuda]"
+```
+
+Run:
+
+```bash
+pip-race infer --model model.onnx --accelerator cuda --input telemetry.jsonl --output frames.jsonl
+pip-race benchmark --model model.onnx --accelerator auto --iterations 10000 --warmup 1000
+```
+
+For very small batch-1 models, CPU or C++ can still beat GPU because device dispatch overhead can dominate. GPU providers matter more for heavier models, batched replays, or when the model is already resident on accelerator-backed runtime paths.
 
 ## Sub-Millisecond Practices
 

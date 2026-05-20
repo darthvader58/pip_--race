@@ -4,6 +4,7 @@ from pip_race.pitwit import PitWit
 from pip_race.visualization import pit_risk_svg, pit_risk_vega_spec, status_bar_vega_spec
 from pip_race.cli import main as cli_main
 from pip_race.benchmark import run_pitwit_benchmark
+from pip_race.inference import select_execution_providers
 
 
 def test_pitwit_emits_dashboard_frame_under_sub_ms_model_latency():
@@ -92,3 +93,22 @@ def test_benchmark_returns_latency_percentiles():
     assert result.p50_ns > 0
     assert result.p95_ns >= result.p50_ns
     assert result.p99_ns >= result.p95_ns
+
+
+def test_onnx_accelerator_provider_selection():
+    available = ["TensorrtExecutionProvider", "CUDAExecutionProvider", "CoreMLExecutionProvider", "CPUExecutionProvider"]
+
+    assert select_execution_providers(available, accelerator="cuda") == [
+        "CUDAExecutionProvider",
+        "CPUExecutionProvider",
+    ]
+    assert select_execution_providers(available, accelerator="metal") == [
+        "CoreMLExecutionProvider",
+        "CPUExecutionProvider",
+    ]
+    assert select_execution_providers(available, accelerator="auto") == [
+        "TensorrtExecutionProvider",
+        "CUDAExecutionProvider",
+        "CoreMLExecutionProvider",
+        "CPUExecutionProvider",
+    ]

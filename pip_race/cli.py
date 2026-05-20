@@ -23,6 +23,12 @@ def main(argv: list[str] | None = None) -> int:
     infer.add_argument("-o", "--output", default="-", help="Output path, or '-' for stdout.")
     infer.add_argument("--format", choices=["jsonl", "csv"], default="jsonl", help="Output format.")
     infer.add_argument("--model", default=None, help="Optional ONNX model path.")
+    infer.add_argument(
+        "--accelerator",
+        choices=["cpu", "cuda", "tensorrt", "coreml", "metal", "auto"],
+        default="cpu",
+        help="ONNX Runtime execution provider preset.",
+    )
     infer.add_argument("--summary", default=None, help="Write summary metrics JSON to this path, or '-' for stderr.")
     infer.add_argument("--svg", default=None, help="Write a pit-risk SVG chart to this path.")
     infer.add_argument("--redis-url", default=None, help="Optionally publish each frame to Redis.")
@@ -32,6 +38,12 @@ def main(argv: list[str] | None = None) -> int:
     bench.add_argument("--iterations", type=int, default=10_000)
     bench.add_argument("--warmup", type=int, default=1_000)
     bench.add_argument("--model", default=None, help="Optional ONNX model path.")
+    bench.add_argument(
+        "--accelerator",
+        choices=["cpu", "cuda", "tensorrt", "coreml", "metal", "auto"],
+        default="cpu",
+        help="ONNX Runtime execution provider preset.",
+    )
     bench.set_defaults(func=_cmd_benchmark)
 
     args = parser.parse_args(argv)
@@ -41,7 +53,7 @@ def main(argv: list[str] | None = None) -> int:
 
 def _cmd_infer(args: argparse.Namespace) -> None:
     packets = _read_packets(args.input, sys.stdin)
-    pitwit = PitWit(runner=OnnxRunner(args.model) if args.model else None)
+    pitwit = PitWit(runner=OnnxRunner(args.model, accelerator=args.accelerator) if args.model else None)
     frames = pitwit.process_many(packets)
 
     if args.redis_url:
@@ -61,7 +73,7 @@ def _cmd_infer(args: argparse.Namespace) -> None:
 
 
 def _cmd_benchmark(args: argparse.Namespace) -> None:
-    pitwit = PitWit(runner=OnnxRunner(args.model) if args.model else None)
+    pitwit = PitWit(runner=OnnxRunner(args.model, accelerator=args.accelerator) if args.model else None)
     result = run_pitwit_benchmark(pitwit=pitwit, iterations=args.iterations, warmup=args.warmup)
     print(result.to_json())
 

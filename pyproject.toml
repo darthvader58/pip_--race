@@ -19,6 +19,7 @@ ml = [
   "onnx>=1.16",
   "onnxruntime>=1.17",
 ]
+cuda = ["onnxruntime-gpu>=1.17"]
 fastf1 = ["fastf1>=3.3"]
 streaming = ["redis>=5.0", "websockets>=12.0"]
 dev = ["pytest>=8.0", "redis>=5.0"]

@@ -72,6 +72,18 @@ from pip_race.inference import OnnxRunner
 runner = OnnxRunner("model.onnx")
 ```
 
+Execution provider presets:
+
+```python
+OnnxRunner("model.onnx", accelerator="cpu")
+OnnxRunner("model.onnx", accelerator="cuda")
+OnnxRunner("model.onnx", accelerator="tensorrt")
+OnnxRunner("model.onnx", accelerator="metal")
+OnnxRunner("model.onnx", accelerator="auto")
+```
+
+`cuda` and `tensorrt` require ONNX Runtime GPU builds on NVIDIA Linux. `metal` selects ONNX Runtime's CoreML provider on macOS; it is not handwritten Metal shader code.
+
 If no model path is supplied, `OnnxRunner` uses a deterministic fallback model for tests and development. Production usage should pass an ONNX model.
 
 ### PyTorch Export
@@ -136,6 +148,7 @@ Default outputs:
 pip-race infer --input telemetry.jsonl --output frames.jsonl
 pip-race infer --input telemetry.jsonl --output frames.csv --format csv
 pip-race infer --input telemetry.jsonl --output frames.jsonl --summary summary.json --svg pit_risk.svg
+pip-race infer --model model.onnx --accelerator cuda --input telemetry.jsonl --output frames.jsonl
 pip-race benchmark --iterations 10000 --warmup 1000
 ```
 
