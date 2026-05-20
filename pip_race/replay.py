@@ -6,19 +6,19 @@ import sys
 from collections.abc import Iterable
 
 from pip_race.contracts import HpcTelemetryPacket
-from pip_race.pipeline import PitWallPipeline
+from pip_race.pitwit import PitWit
 from pip_race.streaming.redis_bus import RedisDashboardPublisher
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Replay telemetry JSONL through the pit-wall pipeline.")
+    parser = argparse.ArgumentParser(description="Replay telemetry JSONL through the PitWit runtime.")
     parser.add_argument("--redis-url", default=None)
     args = parser.parse_args()
 
-    pipeline = PitWallPipeline()
+    pitwit = PitWit()
     publisher = RedisDashboardPublisher(args.redis_url) if args.redis_url else None
     for packet in iter_jsonl(sys.stdin):
-        frame = pipeline.process(packet)
+        frame = pitwit.process(packet)
         if publisher:
             publisher.publish(frame)
         print(json.dumps(frame.to_dict(), separators=(",", ":")), flush=True)

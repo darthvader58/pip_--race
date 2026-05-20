@@ -1,12 +1,12 @@
 # pip-race
 
-`pip-race` is an open-source Python library for building low-latency motorsport telemetry inference pipelines. It normalizes high-rate HPC/trackside telemetry, extracts model features, runs ONNX/PyTorch-derived inference, returns dashboard-ready decision frames, and generates data tables and visualizations directly from the library.
+`pip-race` is an open-source Python library for building low-latency motorsport telemetry inference runtimes. It normalizes high-rate HPC/trackside telemetry, extracts model features, runs ONNX/PyTorch-derived inference, returns dashboard-ready decision frames, and generates data tables and visualizations directly from the library.
 
 The project is intentionally a library, not a hosted web app. There is no Vercel deployment and no bundled React dashboard. Consumers can embed `pip-race` in notebooks, race-engineering tools, internal dashboards, Redis streams, Rust sidecars, or batch analysis jobs.
 
 ## Why This Exists
 
-Modern race strategy systems look like the same problem class as F1 pit-wall analytics: live car telemetry, historical stint context, track status, and tire behavior must be converted into tactical decisions quickly enough for race engineers to act. `pip-race` provides a compact, inspectable version of that pipeline for experimentation and production-style prototyping.
+Modern race strategy systems look like the same problem class as F1 pitwit analytics: live car telemetry, historical stint context, track status, and tire behavior must be converted into tactical decisions quickly enough for race engineers to act. `pip-race` provides a compact, inspectable version of that runtime for experimentation and production-style prototyping.
 
 See [docs/problem_fit.md](docs/problem_fit.md) for the real-world problem-solution fit.
 
@@ -26,7 +26,7 @@ See [docs/problem_fit.md](docs/problem_fit.md) for the real-world problem-soluti
 - Keeps Rust available as a low-latency timing/fan-out sidecar, not as the primary library interface.
 - Targets Linux production workflows for repeatable sub-ms model-path latency.
 
-## Pipeline
+## PitWit Runtime
 
 ```text
 Telemetry source
@@ -45,7 +45,7 @@ OnnxRunner
   ONNX Runtime model, optional C++ native kernel, or deterministic dev fallback
         |
         v
-PitWallPipeline
+PitWit
   DashboardFrame: telemetry + inference + alert status
         |
         +--> frames_to_rows / summarize_frames / write_frames_csv
@@ -83,7 +83,7 @@ pip install -e ".[dev,ml,streaming]"
 ## Quick Start
 
 ```python
-from pip_race import HpcTelemetryPacket, PitWallPipeline
+from pip_race import HpcTelemetryPacket, PitWit
 from pip_race.data import frames_to_rows, summarize_frames
 from pip_race.visualization import pit_risk_svg
 
@@ -103,8 +103,8 @@ packets = [
     )
 ]
 
-pipeline = PitWallPipeline()
-frames = pipeline.process_many(packets)
+pitwit = PitWit()
+frames = pitwit.process_many(packets)
 
 print(summarize_frames(frames))
 print(frames_to_rows(frames))
@@ -136,10 +136,10 @@ packet = HpcTelemetryPacket(
 ### Inference
 
 ```python
-from pip_race import PitWallPipeline
+from pip_race import PitWit
 
-pipeline = PitWallPipeline()
-frame = pipeline.process(packet)
+pitwit = PitWit()
+frame = pitwit.process(packet)
 
 print(frame.inference.pit_risk)
 print(frame.inference.tire_degradation)
@@ -150,9 +150,9 @@ To use an ONNX model:
 
 ```python
 from pip_race.inference import OnnxRunner
-from pip_race import PitWallPipeline
+from pip_race import PitWit
 
-pipeline = PitWallPipeline(runner=OnnxRunner("model.onnx"))
+pitwit = PitWit(runner=OnnxRunner("model.onnx"))
 ```
 
 ### Data Products
@@ -211,7 +211,7 @@ The intended lifecycle is:
 1. Train or fine-tune a PyTorch model.
 2. Export to ONNX.
 3. Load with `OnnxRunner`.
-4. Run through `PitWallPipeline`.
+4. Run through `PitWit`.
 5. Export frames as data, visualization specs, SVG reports, or Redis messages.
 
 Use [docs/model_card_template.md](docs/model_card_template.md) for every model you train or publish.
@@ -222,7 +222,7 @@ Docker is provided only for infrastructure components, not for a hosted web UI.
 
 ```bash
 docker compose up redis
-docker compose --profile pipeline up inference
+docker compose --profile inference up inference
 ```
 
 The Rust pit-timer sidecar can still be run when you need low-latency timing math:
@@ -237,7 +237,7 @@ docker compose up pit-timer
 pip_race/                 Python library
   contracts.py            Typed telemetry and inference contracts
   features.py             Online feature extraction
-  pipeline.py             End-to-end inference orchestration
+  pitwit.py             End-to-end inference orchestration
   data.py                 Rows, summaries, CSV, JSONL
   visualization.py        SVG and Vega-Lite visualization helpers
   inference/              ONNX and PyTorch model utilities
@@ -253,14 +253,14 @@ docs/                     Design and problem-fit documentation
 ## Development
 
 ```bash
-python3 -m pytest tests/test_pipeline.py telemetry_feed/test_speed_profile.py
+python3 -m pytest tests/test_pitwit.py telemetry_feed/test_speed_profile.py
 cd pit_timer_backend && cargo check
 ```
 
 Run the example:
 
 ```bash
-python examples/basic_pipeline.py
+python examples/basic_pitwit.py
 ```
 
 Run the CLI:
@@ -273,7 +273,7 @@ pip-race benchmark --iterations 10000 --warmup 1000
 
 ## Project Status
 
-This is an early-stage library foundation. The public API is intentionally small and centered around `HpcTelemetryPacket`, `PitWallPipeline`, data exporters, visualization helpers, ONNX inference, Redis streaming, and the optional Rust sidecar.
+This is an early-stage library foundation. The public API is intentionally small and centered around `HpcTelemetryPacket`, `PitWit`, data exporters, visualization helpers, ONNX inference, Redis streaming, and the optional Rust sidecar.
 
 ## License
 

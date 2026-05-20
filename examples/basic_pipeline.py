@@ -3,7 +3,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from pip_race import HpcTelemetryPacket, PitWallPipeline
+from pip_race import HpcTelemetryPacket, PitWit
 from pip_race.data import frames_to_rows, summarize_frames
 from pip_race.visualization import write_pit_risk_svg
 
@@ -14,8 +14,8 @@ packets = [
     HpcTelemetryPacket(car_id="SAR", lap=42, lap_distance_m=2390, speed_kph=181, tire_age_laps=18, compound="HARD"),
 ]
 
-pipeline = PitWallPipeline()
-frames = pipeline.process_many(packets)
+pitwit = PitWit()
+frames = pitwit.process_many(packets)
 
 print(summarize_frames(frames))
 print(frames_to_rows(frames))

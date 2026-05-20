@@ -8,7 +8,7 @@ from dataclasses import asdict, dataclass
 from time import perf_counter_ns
 
 from pip_race.contracts import HpcTelemetryPacket
-from pip_race.pipeline import PitWallPipeline
+from pip_race.pitwit import PitWit
 
 
 @dataclass(slots=True)
@@ -31,20 +31,20 @@ class BenchmarkResult:
         return json.dumps(self.to_dict(), indent=2, sort_keys=True)
 
 
-def run_pipeline_benchmark(
-    pipeline: PitWallPipeline | None = None,
+def run_pitwit_benchmark(
+    pitwit: PitWit | None = None,
     packet: HpcTelemetryPacket | None = None,
     iterations: int = 10_000,
     warmup: int = 1_000,
 ) -> BenchmarkResult:
-    """Measure end-to-end single-packet pipeline latency in nanoseconds."""
+    """Measure end-to-end single-packet runtime latency in nanoseconds."""
 
     if iterations <= 0:
         raise ValueError("iterations must be positive")
     if warmup < 0:
         raise ValueError("warmup must be non-negative")
 
-    pipeline = pipeline or PitWallPipeline()
+    pitwit = pitwit or PitWit()
     packet = packet or HpcTelemetryPacket(
         car_id="BENCH",
         lap=1,
@@ -56,12 +56,12 @@ def run_pipeline_benchmark(
     )
 
     for _ in range(warmup):
-        pipeline.process(packet)
+        pitwit.process(packet)
 
     samples: list[int] = []
     for _ in range(iterations):
         start = perf_counter_ns()
-        pipeline.process(packet)
+        pitwit.process(packet)
         samples.append(perf_counter_ns() - start)
 
     ordered = sorted(samples)

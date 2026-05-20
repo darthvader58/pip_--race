@@ -37,22 +37,22 @@ Optional fields default to neutral values. Unknown numeric fields can be placed 
 
 ### `DashboardFrame`
 
-Output packet produced by `PitWallPipeline`. It contains:
+Output packet produced by `PitWit`. It contains:
 
 - original normalized telemetry
 - inference outputs
 - alert status: `GREEN`, `AMBER`, or `RED`
 
-## Pipeline
+## PitWit Runtime
 
-### `PitWallPipeline`
+### `PitWit`
 
 ```python
-from pip_race import PitWallPipeline
+from pip_race import PitWit
 
-pipeline = PitWallPipeline()
-frame = pipeline.process(packet)
-frames = pipeline.process_many([packet])
+pitwit = PitWit()
+frame = pitwit.process(packet)
+frames = pitwit.process_many([packet])
 ```
 
 Constructor options:
@@ -144,8 +144,8 @@ Use `--model model.onnx` for ONNX Runtime inference and `--redis-url redis://loc
 ## Benchmarking
 
 ```python
-from pip_race import run_pipeline_benchmark
+from pip_race import run_pitwit_benchmark
 
-result = run_pipeline_benchmark(iterations=10_000, warmup=1_000)
+result = run_pitwit_benchmark(iterations=10_000, warmup=1_000)
 print(result.p50_ns, result.p95_ns, result.p99_ns)
 ```

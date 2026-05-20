@@ -20,7 +20,7 @@ jobs:
       - name: Install package
         run: python -m pip install -e ".[dev]"
       - name: Run tests
-        run: python -m pytest tests/test_pipeline.py telemetry_feed/test_speed_profile.py
+        run: python -m pytest tests/test_pitwit.py telemetry_feed/test_speed_profile.py
       - name: Smoke test CLI
         run: |
           printf '{"car_id":"ALB","lap":42,"lap_distance_m":2410,"speed_kph":178,"tire_age_laps":29,"compound":"MEDIUM","track_status":"VSC"}\n' \

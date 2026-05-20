@@ -1,13 +1,13 @@
 from pip_race.contracts import HpcTelemetryPacket
 from pip_race.data import frames_to_jsonl, frames_to_rows, summarize_frames
-from pip_race.pipeline import PitWallPipeline
+from pip_race.pitwit import PitWit
 from pip_race.visualization import pit_risk_svg, pit_risk_vega_spec, status_bar_vega_spec
 from pip_race.cli import main as cli_main
-from pip_race.benchmark import run_pipeline_benchmark
+from pip_race.benchmark import run_pitwit_benchmark
 
 
-def test_pipeline_emits_dashboard_frame_under_sub_ms_model_latency():
-    pipeline = PitWallPipeline()
+def test_pitwit_emits_dashboard_frame_under_sub_ms_model_latency():
+    pitwit = PitWit()
     packet = HpcTelemetryPacket(
         car_id="ALB",
         lap=42,
@@ -22,7 +22,7 @@ def test_pipeline_emits_dashboard_frame_under_sub_ms_model_latency():
         track_status="VSC",
     )
 
-    frame = pipeline.process(packet)
+    frame = pitwit.process(packet)
 
     assert frame.telemetry.car_id == "ALB"
     assert 0.0 <= frame.inference.pit_risk <= 1.0
@@ -31,13 +31,13 @@ def test_pipeline_emits_dashboard_frame_under_sub_ms_model_latency():
 
 
 def test_library_data_and_visualization_helpers():
-    pipeline = PitWallPipeline()
+    pitwit = PitWit()
     packets = [
         HpcTelemetryPacket(car_id="ALB", lap=42, lap_distance_m=2300.0, speed_kph=188.0, tire_age_laps=27.0),
         HpcTelemetryPacket(car_id="ALB", lap=42, lap_distance_m=2410.0, speed_kph=178.0, tire_age_laps=29.0, track_status="VSC"),
     ]
 
-    frames = pipeline.process_many(packets)
+    frames = pitwit.process_many(packets)
     rows = frames_to_rows(frames)
     summary = summarize_frames(frames)
     svg = pit_risk_svg(frames)
@@ -86,7 +86,7 @@ def test_cli_writes_jsonl_summary_and_svg(tmp_path):
 
 
 def test_benchmark_returns_latency_percentiles():
-    result = run_pipeline_benchmark(iterations=5, warmup=1)
+    result = run_pitwit_benchmark(iterations=5, warmup=1)
 
     assert result.iterations == 5
     assert result.p50_ns > 0

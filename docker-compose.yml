@@ -12,7 +12,7 @@ services:
       - redis
     environment:
       REDIS_URL: redis://redis:6379/0
-    profiles: ["pipeline"]
+    profiles: ["inference"]
 
   pit-timer:
     build:

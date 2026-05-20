@@ -19,7 +19,7 @@ Describe the operating context, for example:
 
 - offline race replay analysis
 - simulator strategy research
-- real-time pit-wall decision support
+- real-time pitwit decision support
 - dashboard alerting
 
 ## Not Intended For
@@ -79,7 +79,7 @@ Document human-in-the-loop expectations, monitoring requirements, and how false 
 
 - [ ] Feature order frozen and documented
 - [ ] ONNX export validated
-- [ ] `PitWallPipeline` smoke test added
+- [ ] `PitWit` smoke test added
 - [ ] Calibration checked
 - [ ] Latency measured
 - [ ] Model card completed

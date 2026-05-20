@@ -30,7 +30,7 @@ Target budget for a single frame on localhost or same-rack deployment:
 - Redis publish: 100-400 us on local network
 - Rust fan-out/timer sidecar: 50-300 us in colocated deployments
 
-The sub-ms target should be interpreted as model-path latency or backend pipeline latency under colocated services. Notebook rendering, BI visualization, browser paint, and WAN transport are separate budgets.
+The sub-ms target should be interpreted as model-path latency or backend runtime latency under colocated services. Notebook rendering, BI visualization, browser paint, and WAN transport are separate budgets.
 
 ## Initial ML Task
 
@@ -40,4 +40,4 @@ The first inference target is a compact multi-output model:
 - `tire_degradation`: normalized tire degradation pressure.
 - `confidence`: calibration signal for dashboard display and alert gating.
 
-This keeps the system useful before full proprietary tire-energy labels exist, while still matching the real F1 use case: convert high-rate car telemetry into fast pit-wall decisions.
+This keeps the system useful before full proprietary tire-energy labels exist, while still matching the real F1 use case: convert high-rate car telemetry into fast pitwit decisions.

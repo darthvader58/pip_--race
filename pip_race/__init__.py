@@ -1,17 +1,17 @@
-"""Low-latency telemetry inference primitives for pit-wall dashboards."""
+"""Low-latency telemetry inference primitives for pitwit dashboards."""
 
-from pip_race.benchmark import BenchmarkResult, run_pipeline_benchmark
+from pip_race.benchmark import BenchmarkResult, run_pitwit_benchmark
 from pip_race.contracts import DashboardFrame, HpcTelemetryPacket, InferenceResult
 from pip_race.data import frames_to_rows, summarize_frames
-from pip_race.pipeline import PitWallPipeline
+from pip_race.pitwit import PitWit
 
 __all__ = [
     "DashboardFrame",
     "BenchmarkResult",
     "HpcTelemetryPacket",
     "InferenceResult",
-    "PitWallPipeline",
+    "PitWit",
     "frames_to_rows",
-    "run_pipeline_benchmark",
+    "run_pitwit_benchmark",
     "summarize_frames",
 ]

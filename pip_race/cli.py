@@ -8,17 +8,17 @@ from typing import TextIO
 
 from pip_race.contracts import HpcTelemetryPacket
 from pip_race.data import frames_to_jsonl, summarize_frames, write_frames_csv
-from pip_race.benchmark import run_pipeline_benchmark
+from pip_race.benchmark import run_pitwit_benchmark
 from pip_race.inference import OnnxRunner
-from pip_race.pipeline import PitWallPipeline
+from pip_race.pitwit import PitWit
 from pip_race.visualization import write_pit_risk_svg
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="pip-race", description="Telemetry inference pipeline utilities.")
+    parser = argparse.ArgumentParser(prog="pip-race", description="Telemetry inference runtime utilities.")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    infer = subparsers.add_parser("infer", help="Run telemetry JSONL through the inference pipeline.")
+    infer = subparsers.add_parser("infer", help="Run telemetry JSONL through the PitWit runtime.")
     infer.add_argument("-i", "--input", default="-", help="Input telemetry JSONL path, or '-' for stdin.")
     infer.add_argument("-o", "--output", default="-", help="Output path, or '-' for stdout.")
     infer.add_argument("--format", choices=["jsonl", "csv"], default="jsonl", help="Output format.")
@@ -28,7 +28,7 @@ def main(argv: list[str] | None = None) -> int:
     infer.add_argument("--redis-url", default=None, help="Optionally publish each frame to Redis.")
     infer.set_defaults(func=_cmd_infer)
 
-    bench = subparsers.add_parser("benchmark", help="Measure single-frame pipeline latency.")
+    bench = subparsers.add_parser("benchmark", help="Measure single-frame PitWit latency.")
     bench.add_argument("--iterations", type=int, default=10_000)
     bench.add_argument("--warmup", type=int, default=1_000)
     bench.add_argument("--model", default=None, help="Optional ONNX model path.")
@@ -41,8 +41,8 @@ def main(argv: list[str] | None = None) -> int:
 
 def _cmd_infer(args: argparse.Namespace) -> None:
     packets = _read_packets(args.input, sys.stdin)
-    pipeline = PitWallPipeline(runner=OnnxRunner(args.model) if args.model else None)
-    frames = pipeline.process_many(packets)
+    pitwit = PitWit(runner=OnnxRunner(args.model) if args.model else None)
+    frames = pitwit.process_many(packets)
 
     if args.redis_url:
         from pip_race.streaming import RedisDashboardPublisher
@@ -61,8 +61,8 @@ def _cmd_infer(args: argparse.Namespace) -> None:
 
 
 def _cmd_benchmark(args: argparse.Namespace) -> None:
-    pipeline = PitWallPipeline(runner=OnnxRunner(args.model) if args.model else None)
-    result = run_pipeline_benchmark(pipeline=pipeline, iterations=args.iterations, warmup=args.warmup)
+    pitwit = PitWit(runner=OnnxRunner(args.model) if args.model else None)
+    result = run_pitwit_benchmark(pitwit=pitwit, iterations=args.iterations, warmup=args.warmup)
     print(result.to_json())
 
 

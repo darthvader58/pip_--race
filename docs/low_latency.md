@@ -90,9 +90,9 @@ pip-race benchmark --iterations 10000 --warmup 1000
 Programmatic usage:
 
 ```python
-from pip_race import run_pipeline_benchmark
+from pip_race import run_pitwit_benchmark
 
-result = run_pipeline_benchmark(iterations=10_000, warmup=1_000)
+result = run_pitwit_benchmark(iterations=10_000, warmup=1_000)
 print(result.to_json())
 ```
 

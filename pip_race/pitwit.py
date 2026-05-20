@@ -8,7 +8,7 @@ from pip_race.features import FeatureExtractor
 from pip_race.inference.onnx_runner import OnnxRunner
 
 
-class PitWallPipeline:
+class PitWit:
     """Feature extraction plus ONNX inference for single-frame latency."""
 
     def __init__(
