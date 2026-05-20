@@ -4,6 +4,34 @@ A real-time Formula 1 race strategy system combining pit stop probability predic
 
 ---
 
+## ML Inference Library Direction
+
+The project now has a Python package, `pip_race`, that frames the system as a low-latency ML inference pipeline for pit-crew dashboards:
+
+- **PyTorch** defines and exports compact telemetry models to ONNX (`pip_race.inference.torch_model`).
+- **ONNX Runtime** runs the production inference path (`pip_race.inference.onnx_runner`).
+- **Redis** publishes dashboard frames through pub/sub and replayable streams (`pip_race.streaming.redis_bus`).
+- **Rust** keeps hard real-time timing/fan-out work in `pit_timer_backend`, with optional Redis publishing through `REDIS_URL`.
+- **Docker Compose** runs Redis, the Rust pit timer, the dashboard, and the Python inference publisher.
+
+The problem-solution fit is documented in [`docs/problem_fit.md`](docs/problem_fit.md): this maps the library to the same class of real-world problem as F1/AWS pit strategy and telemetry insights, where high-rate car data is converted into tactical pit-wall decisions in real time.
+
+Quick local checks:
+
+```bash
+python3 -m pytest tests/test_pipeline.py telemetry_feed/test_speed_profile.py
+cd pit_timer_backend && cargo check
+```
+
+Example JSONL replay into Redis:
+
+```bash
+printf '{"car_id":"ALB","lap":42,"lap_distance_m":2410,"speed_kph":178,"tire_age_laps":29,"compound":"MEDIUM","track_status":"VSC"}\n' \
+  | python3 -m pip_race.replay --redis-url redis://localhost:6379/0
+```
+
+---
+
 ## System Overview
 
 This system provides real-time strategic intelligence during F1 races by answering two critical questions:

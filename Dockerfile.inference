@@ -1,0 +1,11 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY pyproject.toml README.md ./
+COPY pip_race ./pip_race
+
+RUN pip install --no-cache-dir .[ml]
+
+ENV PYTHONUNBUFFERED=1
+CMD ["python", "-m", "pip_race.replay", "--redis-url", "redis://redis:6379/0"]

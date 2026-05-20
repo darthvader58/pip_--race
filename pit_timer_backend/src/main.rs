@@ -32,13 +32,14 @@ async fn main() {
 
     // Broadcast channel to fan out computed results to all connected clients
     let (tx, _rx) = broadcast::channel::<TimerOut>(128);
+    let redis_url = std::env::var("REDIS_URL").ok();
 
     loop {
         match listener.accept().await {
             Ok((stream, addr)) => {
                 let tx_clone = tx.clone();
                 let rx = tx.subscribe();
-                tokio::spawn(handle_connection(stream, addr.to_string(), tx_clone, rx));
+                tokio::spawn(handle_connection(stream, addr.to_string(), tx_clone, rx, redis_url.clone()));
             }
             Err(e) => {
                 eprintln!("Accept error: {}", e);
@@ -54,6 +55,7 @@ async fn handle_connection(
     peer_addr: String,
     tx: broadcast::Sender<TimerOut>,
     mut rx: broadcast::Receiver<TimerOut>,
+    redis_url: Option<String>,
 ) {
     let ws_stream = match accept_async(stream).await {
         Ok(ws) => {
@@ -77,7 +79,7 @@ async fn handle_connection(
     let cfg = config::TimerConfig::load(cfg_path.to_str().unwrap());
 
     // Writer task: forwards broadcast messages to this websocket client
-    let mut write_task = tokio::spawn(async move {
+    let write_task = tokio::spawn(async move {
         while let Ok(out) = rx.recv().await {
             if let Ok(text) = serde_json::to_string(&out) {
                 if write.send(tokio_tungstenite::tungstenite::Message::Text(text)).await.is_err() {
@@ -109,6 +111,7 @@ async fn handle_connection(
                     );
 
                     // Ignore send errors (no subscribers)
+                    publish_timer_to_redis(redis_url.as_deref(), &out).await;
                     let _ = tx.send(out);
                 }
             }
@@ -117,6 +120,29 @@ async fn handle_connection(
 
     // Ensure writer task stops when reader ends
     write_task.abort();
+}
+
+async fn publish_timer_to_redis(redis_url: Option<&str>, out: &TimerOut) {
+    let Some(redis_url) = redis_url else { return };
+    let Ok(client) = redis::Client::open(redis_url) else { return };
+    let Ok(mut conn) = client.get_multiplexed_async_connection().await else { return };
+    let Ok(payload) = serde_json::to_string(out) else { return };
+
+    let _: redis::RedisResult<i64> = redis::cmd("PUBLISH")
+        .arg("pitcrew:timer")
+        .arg(&payload)
+        .query_async(&mut conn)
+        .await;
+    let _: redis::RedisResult<String> = redis::cmd("XADD")
+        .arg("pitcrew:timer_frames")
+        .arg("MAXLEN")
+        .arg("~")
+        .arg(512)
+        .arg("*")
+        .arg("frame")
+        .arg(payload)
+        .query_async(&mut conn)
+        .await;
 }
 
 fn resolve_config_path() -> PathBuf {

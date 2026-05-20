@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pip-race"
+version = "0.1.0"
+description = "Sub-millisecond F1 pit-wall telemetry inference pipeline."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "redis>=5.0",
+  "websockets>=12.0",
+]
+
+[project.optional-dependencies]
+ml = [
+  "numpy>=1.24",
+  "torch>=2.2",
+  "onnx>=1.16",
+  "onnxruntime>=1.17",
+]
+fastf1 = ["fastf1>=3.3"]
+dev = ["pytest>=8.0"]
+
+[tool.setuptools.packages.find]
+include = ["pip_race*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "telemetry_feed"]

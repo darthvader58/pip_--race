@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Node/frontend
+node_modules/
+dist/
+dist-ssr/
+*.log
+
+# Rust
+target/
+**/target/
+
+# FastF1 and local generated data
+telemetry_feed/fastf1_cache/
+*.ff1pkl
+dump.rdb
+
+# OS/editor
+.DS_Store
+.idea/
+*.swp
+*.swo
+
+# Large generated model/report outputs
+rival-boxing/artifacts/reports/
+rival-boxing/rt_predictor/target/
+pit_timer_backend/target/
