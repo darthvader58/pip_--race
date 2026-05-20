@@ -10,13 +10,6 @@ from pip_race.pipeline import PitWallPipeline
 from pip_race.streaming.redis_bus import RedisDashboardPublisher
 
 
-def iter_jsonl(lines: Iterable[str]) -> Iterable[HpcTelemetryPacket]:
-    for line in lines:
-        line = line.strip()
-        if line:
-            yield HpcTelemetryPacket.from_mapping(json.loads(line))
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(description="Replay telemetry JSONL through the pit-wall pipeline.")
     parser.add_argument("--redis-url", default=None)
@@ -29,6 +22,13 @@ def main() -> None:
         if publisher:
             publisher.publish(frame)
         print(json.dumps(frame.to_dict(), separators=(",", ":")), flush=True)
+
+
+def iter_jsonl(lines: Iterable[str]) -> Iterable[HpcTelemetryPacket]:
+    for line in lines:
+        line = line.strip()
+        if line:
+            yield HpcTelemetryPacket.from_mapping(json.loads(line))
 
 
 if __name__ == "__main__":

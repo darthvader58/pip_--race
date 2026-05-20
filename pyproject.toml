@@ -24,6 +24,7 @@ streaming = ["redis>=5.0", "websockets>=12.0"]
 dev = ["pytest>=8.0", "redis>=5.0"]
 
 [project.scripts]
+pip-race = "pip_race.cli:main"
 pip-race-replay = "pip_race.replay:main"
 
 [tool.setuptools.packages.find]

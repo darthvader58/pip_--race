@@ -255,6 +255,13 @@ Run the example:
 python examples/basic_pipeline.py
 ```
 
+Run the CLI:
+
+```bash
+pip-race infer --input telemetry.jsonl --output frames.jsonl --summary summary.json --svg pit_risk.svg
+pip-race infer --input telemetry.jsonl --output frames.csv --format csv
+```
+
 ## Project Status
 
 This is an early-stage library foundation. The public API is intentionally small and centered around `HpcTelemetryPacket`, `PitWallPipeline`, data exporters, visualization helpers, ONNX inference, Redis streaming, and the optional Rust sidecar.
