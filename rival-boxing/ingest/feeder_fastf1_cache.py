@@ -253,9 +253,6 @@ def main():
     ap.add_argument("--sleep", type=float, default=0.10)
     ap.add_argument("--only", default="", help="CSV of 3-letter driver codes")
     ap.add_argument("--echo", action="store_true")
-    # NEW: Bridge service for WebSocket broadcasting to frontend
-    ap.add_argument("--bridge", default="http://localhost:8081/update", 
-                    help="Bridge service URL for WebSocket broadcasting")
     args = ap.parse_args()
 
     feat_list = load_feat_list(args.meta)
@@ -283,8 +280,7 @@ def main():
     })
 
     posted = 0
-    bridge_failures = 0
-    
+
     for _, lap in laps.iterrows():
         drv = str(lap["Driver"]).upper()
         lapnum = int(lap["LapNumber"])
@@ -329,46 +325,18 @@ def main():
                     p3 = out.get("p3", None)
                     print(f"[OK] {drv} L {lapnum:2d}: p2={p2:.3f} p3={p3:.3f}", flush=True)
                 
-                # NEW: Send to bridge service for WebSocket broadcasting to frontend
-                try:
-                    bridge_payload = {
-                        'driver': drv,
-                        'lap': lapnum,
-                        'p2': out.get('p2', 0.0),
-                        'p3': out.get('p3', 0.0),
-                        't': out.get('t', int(time.time() * 1000))
-                    }
-                    bridge_r = requests.post(args.bridge, json=bridge_payload, timeout=1.0)
-                    if bridge_r.status_code != 200:
-                        bridge_failures += 1
-                        if bridge_failures % 50 == 0:
-                            print(f"[WARN] Bridge POST failed: {bridge_r.status_code} (total failures: {bridge_failures})", flush=True)
-                except requests.exceptions.RequestException as bridge_e:
-                    # Don't fail the main flow if bridge is down
-                    bridge_failures += 1
-                    if bridge_failures == 1:
-                        print(f"[WARN] Bridge service unavailable at {args.bridge}. Predictions won't reach frontend.", flush=True)
-                        print(f"       Make sure bridge service is running: cd bridge-service && npm start", flush=True)
-                    elif bridge_failures % 100 == 0:
-                        print(f"[WARN] Bridge connection issues (failures: {bridge_failures})", flush=True)
-                    
         except Exception as e:
             print(f"[ERR] POST to rt_predictor failed: {e}", flush=True)
 
         drv_state["prev_row"] = row
         posted += 1
         if posted % 50 == 0:
-            print(f"Posted {posted} packets... (bridge failures: {bridge_failures})", flush=True)
+            print(f"Posted {posted} packets...", flush=True)
 
         time.sleep(args.sleep if args.sleep >= 0 else 0.0)
 
     print(f"\n=== Summary ===")
     print(f"Total packets posted to rt_predictor: {posted}")
-    if bridge_failures > 0:
-        print(f"Bridge service failures: {bridge_failures}")
-        print(f"Note: Start bridge service with: cd bridge-service && npm start")
-    else:
-        print(f"Bridge service: All packets sent successfully ✓")
 
 if __name__ == "__main__":
     main()

@@ -2,7 +2,7 @@
 
 `pip-race` is an open-source Python library for building low-latency motorsport telemetry inference runtimes. It normalizes high-rate HPC/trackside telemetry, extracts model features, runs ONNX/PyTorch-derived inference, returns dashboard-ready decision frames, and generates data tables and visualizations directly from the library.
 
-The project is intentionally a library, not a hosted web app. There is no Vercel deployment and no bundled React dashboard. Consumers can embed `pip-race` in notebooks, race-engineering tools, internal dashboards, Redis streams, Rust sidecars, or batch analysis jobs.
+The project is intentionally a library, not a hosted app. Consumers can embed `pip-race` in notebooks, race-engineering tools, internal tools, Redis streams, Rust sidecars, or batch analysis jobs.
 
 ## Why This Exists
 
@@ -20,7 +20,7 @@ See [docs/problem_fit.md](docs/problem_fit.md) for the real-world problem-soluti
 - Provides a deterministic fallback model for development and tests.
 - Returns structured `DashboardFrame` objects with pit risk, tire degradation, confidence, latency, and alert status.
 - Converts inference frames into table rows, JSONL, CSV, and summary metrics.
-- Generates built-in visualizations without a web frontend:
+- Generates built-in visualizations without bundling an app:
   - Vega-Lite specs for notebooks and BI tools.
   - Dependency-free SVG pit-risk charts.
 - Publishes optional Redis pub/sub and Redis Stream frames for external dashboards.
@@ -227,7 +227,7 @@ docker compose up redis
 docker compose --profile inference up inference
 ```
 
-The Rust pit-timer sidecar can still be run when you need low-latency timing math:
+The root `Dockerfile` builds the optional Rust sidecar. `Dockerfile.inference` builds the Python library runtime. The Rust pit-timer sidecar can still be run when you need low-latency timing math:
 
 ```bash
 docker compose up pit-timer

@@ -11,7 +11,7 @@ pip install -e ".[dev,ml,streaming]"
 ## Checks
 
 ```bash
-python3 -m pytest tests/test_pipeline.py telemetry_feed/test_speed_profile.py
+python3 -m pytest tests/test_pitwit.py telemetry_feed/test_speed_profile.py
 cd pit_timer_backend && cargo check
 ```
 
@@ -21,3 +21,4 @@ cd pit_timer_backend && cargo check
 - Do not add generated folders such as `node_modules`, `target`, caches, or reports.
 - Prefer library APIs, examples, docs, and tests over hosted web-app code.
 - Keep visualizations exportable as data, SVG, or specs that downstream tools can render.
+- Keep public runtime naming centered on `PitWit`.

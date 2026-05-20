@@ -4,8 +4,9 @@ WORKDIR /app
 
 COPY pyproject.toml README.md ./
 COPY pip_race ./pip_race
+COPY cpp ./cpp
 
 RUN pip install --no-cache-dir ".[ml,streaming]"
 
 ENV PYTHONUNBUFFERED=1
-CMD ["python", "-m", "pip_race.replay", "--redis-url", "redis://redis:6379/0"]
+CMD ["pip-race", "infer", "--input", "-", "--output", "-", "--redis-url", "redis://redis:6379/0"]
