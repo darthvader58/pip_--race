@@ -27,6 +27,26 @@ jobs:
             | pip-race infer --input - --output -
       - name: Smoke test benchmark
         run: pip-race benchmark --iterations 20 --warmup 2
+      - name: Validate docs and notebook assets
+        run: |
+          python -m json.tool docs.json > /dev/null
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          for path in sorted(Path("notebooks").glob("*.ipynb")):
+              with path.open("r", encoding="utf-8") as handle:
+                  notebook = json.load(handle)
+              assert notebook.get("cells"), f"{path} has no cells"
+
+          for path in sorted(Path("docs").rglob("*.mdx")):
+              text = path.read_text(encoding="utf-8")
+              assert "PitWit" in text or path.name == "index.mdx", f"{path} is missing PitWit naming"
+          PY
+      - name: Smoke test library example
+        run: |
+          python examples/basic_pitwit.py
+          test -s pit_risk.svg
 
   rust:
     name: Rust sidecar check

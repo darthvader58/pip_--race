@@ -10,6 +10,8 @@ pip-race infer --input telemetry.jsonl --output frames.jsonl --summary summary.j
 pip-race benchmark --iterations 10000 --warmup 1000
 ```
 
+PitWit uses these commands for local inference, replay, export, and latency measurement.
+
 Use `--model model.onnx` to run ONNX Runtime.
 
 Use `--redis-url redis://localhost:6379/0` to publish frames while scoring.
