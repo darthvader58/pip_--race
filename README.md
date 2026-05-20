@@ -506,7 +506,8 @@ VITE_PROBS_WS=ws://localhost:8081
 
 ---
 ## Deployment
-Vercel. Deployed on **__pitwit.vercel.app__** and **__pip-race.vercel.app__** . Backend server exists locally. Future work involves AWS/Convex Integration for Cloud based servers. 
+**Vercel** . Deployed on __pip-race.vercel.app__ . Backend server exists locally. Future work involves AWS/Convex Integration for Cloud based servers.
+
 ---
 
 ## 🛠️ Dependencies
