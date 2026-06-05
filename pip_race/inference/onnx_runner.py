@@ -62,9 +62,21 @@ class OnnxRunner:
             return self.native.predict(features)
 
         row = features[0]
-        score = float(row[3] * 0.08 + row[11] * 0.65 + row[14] * 0.75)
+        tire_age_norm = min(1.0, max(0.0, row[3] / 45.0))
+        degradation_index = min(1.0, max(0.0, row[14]))
+        pit_entry_window = 1.0 - min(1.0, max(0.0, row[15]) / 0.35)
+        cheap_stop = row[11]
+        score = float(
+            -2.0
+            + tire_age_norm * 1.4
+            + cheap_stop * 0.8
+            + degradation_index * 1.0
+            + pit_entry_window * 1.2
+            + row[2] * 0.35
+            - row[1] * 0.2
+        )
         pit_risk = 1.0 / (1.0 + pow(2.718281828459045, -score))
-        tire_degradation = float(min(1.0, row[14]))
+        tire_degradation = degradation_index
         confidence = float(max(pit_risk, 1.0 - pit_risk))
         return pit_risk, tire_degradation, confidence
 

@@ -24,7 +24,8 @@
           </label>
           <label>
             Lap
-            <input name="lap" type="number" min="1" max="200" value="{{ defaults.lap }}">
+            <input name="lap" type="range" min="1" max="200" step="1" value="{{ defaults.lap }}">
+            <output for="lap" id="lapOut">{{ defaults.lap }}</output>
           </label>
           <label>
             Distance

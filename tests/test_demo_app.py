@@ -25,5 +25,6 @@ def test_predict_endpoint_returns_pitwit_payload():
     body = response.get_json()
     assert body["frame"]["telemetry"]["car_id"] == "ALB"
     assert 0 <= body["frame"]["inference"]["pit_risk"] <= 1
+    assert body["model_source"] == "demo_model/pitwit_demo.onnx"
     assert body["summary"]["frames"] == 4
     assert "<svg" in body["svg"]

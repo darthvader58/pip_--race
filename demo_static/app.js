@@ -9,12 +9,21 @@ const chartWrap = document.querySelector("#chartWrap");
 
 const throttle = form.elements.throttle;
 const brake = form.elements.brake;
+const lap = form.elements.lap;
 const throttleOut = document.querySelector("#throttleOut");
 const brakeOut = document.querySelector("#brakeOut");
+const lapOut = document.querySelector("#lapOut");
+let inferenceTimer;
 
 function syncRangeOutputs() {
+  lapOut.value = Number(lap.value).toFixed(0);
   throttleOut.value = Number(throttle.value).toFixed(2);
   brakeOut.value = Number(brake.value).toFixed(2);
+}
+
+function scheduleInference() {
+  window.clearTimeout(inferenceTimer);
+  inferenceTimer = window.setTimeout(() => runInference(), 180);
 }
 
 function payloadFromForm() {
@@ -74,7 +83,13 @@ async function runInference(event) {
 }
 
 form.addEventListener("submit", runInference);
-throttle.addEventListener("input", syncRangeOutputs);
-brake.addEventListener("input", syncRangeOutputs);
+form.addEventListener("input", () => {
+  syncRangeOutputs();
+  scheduleInference();
+});
+form.addEventListener("change", () => {
+  syncRangeOutputs();
+  scheduleInference();
+});
 syncRangeOutputs();
 runInference();

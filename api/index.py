@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -13,6 +14,7 @@ if str(ROOT) not in sys.path:
 from pip_race import HpcTelemetryPacket, PitWit
 from pip_race.data import frames_to_rows, summarize_frames
 from pip_race.visualization import pit_risk_svg
+from pip_race.inference import OnnxRunner
 
 
 app = Flask(
@@ -57,7 +59,7 @@ def predict():
         return jsonify({"error": str(exc)}), 400
 
     packets = _demo_stint(packet)
-    frames = PitWit().process_many(packets)
+    frames = _pitwit().process_many(packets)
     rows = frames_to_rows(frames)
     current = frames[-1]
 
@@ -67,8 +69,15 @@ def predict():
             "rows": rows,
             "summary": summarize_frames(frames),
             "svg": pit_risk_svg(frames, width=760, height=280),
+            "model_source": "demo_model/pitwit_demo.onnx",
         }
     )
+
+
+@lru_cache(maxsize=1)
+def _pitwit() -> PitWit:
+    model_path = ROOT / "demo_model" / "pitwit_demo.onnx"
+    return PitWit(runner=OnnxRunner(model_path, use_native_fallback=False))
 
 
 def _packet_from_payload(payload: dict[str, Any]) -> HpcTelemetryPacket:
