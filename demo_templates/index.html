@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>pip-race PitWit demo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">pip-race</p>
+          <h1>PitWit telemetry inference</h1>
+        </div>
+        <div class="status-pill" id="statusPill">READY</div>
+      </header>
+
+      <section class="workspace" aria-label="PitWit demo workspace">
+        <form class="control-panel" id="telemetryForm">
+          <label>
+            Car
+            <input name="car_id" value="{{ defaults.car_id }}" maxlength="8" autocomplete="off">
+          </label>
+          <label>
+            Lap
+            <input name="lap" type="number" min="1" max="200" value="{{ defaults.lap }}">
+          </label>
+          <label>
+            Distance
+            <input name="lap_distance_m" type="number" min="0" max="8000" step="10" value="{{ defaults.lap_distance_m }}">
+          </label>
+          <label>
+            Speed
+            <input name="speed_kph" type="number" min="0" max="380" step="1" value="{{ defaults.speed_kph }}">
+          </label>
+          <label>
+            Throttle
+            <input name="throttle" type="range" min="0" max="1" step="0.01" value="{{ defaults.throttle }}">
+            <output for="throttle" id="throttleOut">{{ defaults.throttle }}</output>
+          </label>
+          <label>
+            Brake
+            <input name="brake" type="range" min="0" max="1" step="0.01" value="{{ defaults.brake }}">
+            <output for="brake" id="brakeOut">{{ defaults.brake }}</output>
+          </label>
+          <label>
+            Tire age
+            <input name="tire_age_laps" type="number" min="0" max="90" step="0.5" value="{{ defaults.tire_age_laps }}">
+          </label>
+          <label>
+            Track temp
+            <input name="track_temp_c" type="number" min="-10" max="80" step="0.5" value="{{ defaults.track_temp_c }}">
+          </label>
+          <label>
+            Air temp
+            <input name="air_temp_c" type="number" min="-10" max="55" step="0.5" value="{{ defaults.air_temp_c }}">
+          </label>
+          <label>
+            Compound
+            <select name="compound">
+              <option selected>MEDIUM</option>
+              <option>SOFT</option>
+              <option>HARD</option>
+              <option>INTERMEDIATE</option>
+              <option>WET</option>
+            </select>
+          </label>
+          <label>
+            Track
+            <select name="track_status">
+              <option>GREEN</option>
+              <option selected>VSC</option>
+              <option>SAFETY_CAR</option>
+              <option>YELLOW</option>
+            </select>
+          </label>
+          <button type="submit">Run inference</button>
+        </form>
+
+        <section class="dashboard" aria-label="PitWit output">
+          <div class="metrics">
+            <article>
+              <span>Pit risk</span>
+              <strong id="riskValue">--</strong>
+            </article>
+            <article>
+              <span>Degradation</span>
+              <strong id="degradationValue">--</strong>
+            </article>
+            <article>
+              <span>Confidence</span>
+              <strong id="confidenceValue">--</strong>
+            </article>
+            <article>
+              <span>Latency</span>
+              <strong id="latencyValue">--</strong>
+            </article>
+          </div>
+
+          <div class="chart-wrap" id="chartWrap"></div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Car</th>
+                  <th>Distance</th>
+                  <th>Risk</th>
+                  <th>Status</th>
+                  <th>Age</th>
+                  <th>Speed</th>
+                </tr>
+              </thead>
+              <tbody id="rowsBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+    </main>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>

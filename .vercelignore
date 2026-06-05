@@ -1,0 +1,39 @@
+.git
+.gitignore
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.venv
+venv
+__pycache__
+*.py[cod]
+*.log
+
+# Local build and dependency caches
+node_modules
+dist
+build
+target
+**/target
+**/.hacktx
+**/fastf1_cache
+*.ff1pkl
+*.sqlite
+*.sqlite3
+
+# Non-demo services and large artifacts
+cpp
+go
+notebooks
+pit_timer_backend
+rival-boxing
+telemetry_feed
+
+# Docs and repo metadata not needed by the Vercel function
+docs
+docs.json
+CONTRIBUTING.md
+Dockerfile
+Dockerfile.inference
+docker-compose.yml
+LICENSE

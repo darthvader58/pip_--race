@@ -47,3 +47,4 @@ rival-boxing/artifacts/plots/
 rival-boxing/artifacts/cache/
 rival-boxing/rt_predictor/target/
 pit_timer_backend/target/
+.vercel
